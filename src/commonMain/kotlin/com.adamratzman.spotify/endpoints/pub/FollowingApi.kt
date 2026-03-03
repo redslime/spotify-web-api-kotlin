@@ -29,6 +29,7 @@ public open class FollowingApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      *
      * @throws [BadRequestException] if the playlist is not found OR any user in the list does not exist
      */
+    @Deprecated("Removed")
     public suspend fun areFollowingPlaylist(
         playlist: String,
         vararg users: String
@@ -55,6 +56,7 @@ public open class FollowingApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      *
      * @throws [BadRequestException] if the playlist is not found or if the user does not exist
      */
+    @Deprecated("Moved", ReplaceWith("ClientFollowingApi.isFollowingPlaylist()"))
     public suspend fun isFollowingPlaylist(playlist: String, user: String): Boolean = areFollowingPlaylist(
         playlist,
         users = arrayOf(user)

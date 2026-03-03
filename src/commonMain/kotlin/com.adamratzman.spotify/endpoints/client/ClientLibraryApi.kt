@@ -171,7 +171,7 @@ public class ClientLibraryApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
         }
         return ids.toList().chunked(50).map { list ->
             get(
-                endpointBuilder("/me/$type/contains").with("ids", list.joinToString(",") { type.id(it).encodeUrl() })
+                endpointBuilder("/me/library/contains").with("uris", list.joinToString(",") { type.uri(it).encodeUrl() })
                     .toString()
             ).toList(ListSerializer(Boolean.serializer()), api, json)
         }.flatten()
@@ -213,7 +213,8 @@ public class ClientLibraryApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
             )
         }
         ids.toList().chunked(50).forEach { list ->
-            put(endpointBuilder("/me/$type").with("ids", list.joinToString(",") { type.id(it).encodeUrl() }).toString())
+            put(endpointBuilder("/me/library")
+                .with("uris", list.joinToString(",") { type.uri(it).encodeUrl() }).toString())
         }
     }
 
@@ -258,9 +259,9 @@ public class ClientLibraryApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
         }
         ids.toList().chunked(50).forEach { list ->
             delete(
-                endpointBuilder("/me/$type").with(
-                    "ids",
-                    list.joinToString(",") { type.id(it).encodeUrl() }
+                endpointBuilder("/me/library").with(
+                    "uris",
+                    list.joinToString(",") { type.uri(it).encodeUrl() }
                 ).toString()
             )
         }
@@ -273,11 +274,12 @@ public class ClientLibraryApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
  * @param value Spotify id for the type
  * @param id How to transform an id (or uri) input into its Spotify id
  */
-public enum class LibraryType(private val value: String, internal val id: (String) -> String) {
-    Track("tracks", { PlayableUri(it).id }),
-    Album("albums", { AlbumUri(it).id }),
-    Episode("episodes", { EpisodeUri(it).id }),
-    Show("shows", { ShowUri(it).id });
+public enum class LibraryType(private val value: String, internal val id: (String) -> String,
+        internal val uri: (String) -> String) {
+    Track("tracks", { PlayableUri(it).id }, { PlayableUri(it).uri }),
+    Album("albums", { AlbumUri(it).id }, { AlbumUri(it).uri }),
+    Episode("episodes", { EpisodeUri(it).id }, { EpisodeUri(it).uri }),
+    Show("shows", { ShowUri(it).id }, { ShowUri(it).uri });
 
     override fun toString(): String = value
 }
