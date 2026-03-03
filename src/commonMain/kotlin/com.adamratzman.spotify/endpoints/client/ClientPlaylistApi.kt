@@ -46,7 +46,6 @@ public class ClientPlaylistApi(api: GenericSpotifyApi) : PlaylistApi(api) {
      *
      * **[Api Reference](https://developer.spotify.com/documentation/web-api/reference/playlists/create-playlist/)**
      *
-     * @param user The user’s Spotify user ID.
      * @param name The name for the new playlist, for example "Your Coolest Playlist" . This name does not need to be
      * unique; a user may have several playlists with the same name.
      * @param description
@@ -63,7 +62,6 @@ public class ClientPlaylistApi(api: GenericSpotifyApi) : PlaylistApi(api) {
         description: String? = null,
         public: Boolean? = null,
         collaborative: Boolean? = null,
-        user: String? = null
     ): Playlist {
         if (public == null || public) {
             requireScopes(SpotifyScope.PlaylistModifyPublic)
@@ -79,10 +77,24 @@ public class ClientPlaylistApi(api: GenericSpotifyApi) : PlaylistApi(api) {
         if (collaborative != null) body += buildJsonObject { put("collaborative", collaborative) }
 
         return post(
-            endpointBuilder("/users/${UserUri(user ?: (api as SpotifyClientApi).getUserId()).id.encodeUrl()}/playlists").toString(),
+            endpointBuilder("/me/playlists").toString(),
             body.mapToJsonString()
         ).toObject(Playlist.serializer(), api, json)
     }
+
+    /**
+     * Deprecated, user parameter is not required anymore.
+     *
+     * @see createClientPlaylist
+     */
+    @Deprecated("Moved", ReplaceWith("createClientPlaylist(name, description, public, collaborative)"))
+    public suspend fun createClientPlaylist(
+        name: String,
+        description: String? = null,
+        public: Boolean? = null,
+        collaborative: Boolean? = null,
+        user: String? = null
+    ): Playlist = createClientPlaylist(name, description, public, collaborative)
 
     /**
      * Add a [Playable] to a user’s playlist.
@@ -141,7 +153,7 @@ public class ClientPlaylistApi(api: GenericSpotifyApi) : PlaylistApi(api) {
             }
             if (position != null) body += buildJsonObject { put("position", position) }
             post(
-                endpointBuilder("/playlists/${PlaylistUri(playlist).id.encodeUrl()}/tracks").toString(),
+                endpointBuilder("/playlists/${PlaylistUri(playlist).id.encodeUrl()}/items").toString(),
                 body.mapToJsonString()
             )
         }
@@ -234,8 +246,19 @@ public class ClientPlaylistApi(api: GenericSpotifyApi) : PlaylistApi(api) {
      *
      * @param playlist playlist id
      */
-    public suspend fun deleteClientPlaylist(playlist: String): String =
+    public suspend fun deleteClientPlaylist(playlist: String): Unit =
         (api as SpotifyClientApi).following.unfollowPlaylist(PlaylistUri(playlist).id)
+
+    /**
+     * This method is equivalent to unfollowing the playlists with the given [playlists].
+     *
+     * Unfortunately, Spotify does not allow **deletion** of playlists themselves
+     *
+     * @param playlists playlist ids
+     */
+    public suspend fun deleteClientPlaylists(vararg playlists: String) {
+        (api as SpotifyClientApi).following.unfollowPlaylists(*playlists)
+    }
 
     /**
      * Reorder a playable or a group of playables in a playlist.
@@ -275,7 +298,7 @@ public class ClientPlaylistApi(api: GenericSpotifyApi) : PlaylistApi(api) {
         if (snapshotId != null) body += buildJsonObject { put("snapshot_id", snapshotId) }
 
         return put(
-            endpointBuilder("/playlists/${PlaylistUri(playlist).id.encodeUrl()}/tracks").toString(),
+            endpointBuilder("/playlists/${PlaylistUri(playlist).id.encodeUrl()}/items").toString(),
             body.mapToJsonString()
         ).toObject(PlaylistSnapshot.serializer(), api, json)
     }
@@ -305,7 +328,7 @@ public class ClientPlaylistApi(api: GenericSpotifyApi) : PlaylistApi(api) {
             )
         }
         put(
-            endpointBuilder("/playlists/${PlaylistUri(playlist).id.encodeUrl()}/tracks").toString(),
+            endpointBuilder("/playlists/${PlaylistUri(playlist).id.encodeUrl()}/items").toString(),
             body.mapToJsonString()
         )
     }
@@ -399,6 +422,7 @@ public class ClientPlaylistApi(api: GenericSpotifyApi) : PlaylistApi(api) {
      * @param positions The positions at which the playable is located in the playlist
      * @param snapshotId The playlist snapshot against which to apply this action. **recommended to have**
      */
+    @Deprecated("Removed positions", ReplaceWith("removePlayableFromClientPlaylist(playlist, playable, snapshotId)"))
     public suspend fun removePlayableFromClientPlaylist(
         playlist: String,
         playable: PlayableUri,
@@ -440,7 +464,7 @@ public class ClientPlaylistApi(api: GenericSpotifyApi) : PlaylistApi(api) {
         playlist: String,
         vararg playables: PlayableUri,
         snapshotId: String? = null
-    ): PlaylistSnapshot = removePlaylistPlayablesImpl(playlist, playables.map { it to null }.toTypedArray(), snapshotId)
+    ): PlaylistSnapshot = removePlaylistPlayablesImpl(playlist, playables.toList().toTypedArray(), snapshotId)
 
     /**
      * Remove playables (each with their own positions) from the given playlist. **Bulk requesting is only available when [snapshotId] is null.**
@@ -454,15 +478,16 @@ public class ClientPlaylistApi(api: GenericSpotifyApi) : PlaylistApi(api) {
      * @param playables An array of [Pair]s of playable uris *and* playable positions (zero-based). Maximum **100**.
      * @param snapshotId The playlist snapshot against which to apply this action. **recommended to have**
      */
+    @Deprecated("Removed positions", ReplaceWith("removePlayablesFromClientPlaylist(playlist, *playables.map { it.first }.toTypedArray(), snapshotId = snapshotId)"))
     public suspend fun removePlayablesFromClientPlaylist(
         playlist: String,
         vararg playables: Pair<PlayableUri, SpotifyPlayablePositions>,
         snapshotId: String? = null
-    ): PlaylistSnapshot = removePlaylistPlayablesImpl(playlist, playables.toList().toTypedArray(), snapshotId)
+    ): PlaylistSnapshot = removePlaylistPlayablesImpl(playlist, playables.map { it.first }.toList().toTypedArray(), snapshotId)
 
     private suspend fun removePlaylistPlayablesImpl(
         playlist: String,
-        playables: Array<Pair<PlayableUri, SpotifyPlayablePositions?>>,
+        playables: Array<PlayableUri>,
         snapshotId: String?
     ): PlaylistSnapshot {
         requireScopes(SpotifyScope.PlaylistModifyPublic, SpotifyScope.PlaylistModifyPrivate, anyOf = true)
@@ -474,28 +499,18 @@ public class ClientPlaylistApi(api: GenericSpotifyApi) : PlaylistApi(api) {
             if (snapshotId != null) body += buildJsonObject { put("snapshot_id", snapshotId) }
             body += buildJsonObject {
                 put(
-                    "tracks",
+                    "items",
                     JsonArray(
-                        chunk.map { (playable, positions) ->
+                        chunk.map { playable ->
                             val json = jsonMap()
                             json += buildJsonObject { put("uri", playable.uri) }
-                            if (positions?.positions?.isNotEmpty() == true) {
-                                json += buildJsonObject {
-                                    put(
-                                        "positions",
-                                        JsonArray(
-                                            positions.positions.map(::JsonPrimitive)
-                                        )
-                                    )
-                                }
-                            }
                             JsonObject(json)
                         }
                     )
                 )
             }
             delete(
-                endpointBuilder("/playlists/${PlaylistUri(playlist).id}/tracks").toString(),
+                endpointBuilder("/playlists/${PlaylistUri(playlist).id}/items").toString(),
                 body = body.mapToJsonString()
             ).toObject(PlaylistSnapshot.serializer(), api, json)
         }.last()
@@ -512,7 +527,9 @@ public data class PlaylistSnapshot(@SerialName("snapshot_id") val snapshotId: St
 
 /**
  * Represents the positions inside a playlist's playables list of where to locate the playable
+ * Deprecated, removing certain positions is [not supported anymore](https://community.spotify.com/t5/Spotify-for-Developers/Can-t-remove-specific-tracks-from-playlist/td-p/5753116).
  *
  * @param positions Playable positions (zero-based)
  */
+@Deprecated("Removed")
 public class SpotifyPlayablePositions(public vararg val positions: Int)

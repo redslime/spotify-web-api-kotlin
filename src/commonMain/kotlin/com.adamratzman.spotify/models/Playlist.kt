@@ -23,7 +23,7 @@ import kotlinx.serialization.Serializable
  * @param primaryColor Unknown.
  * @param public The playlist’s public/private status: true the playlist is public, false the
  * playlist is private, null the playlist status is not relevant.
- * @param tracks A collection containing a link ( href ) to the Web API endpoint where full details of the
+ * @param items A collection containing a link ( href ) to the Web API endpoint where full details of the
  * playlist’s tracks can be retrieved, along with the total number of tracks in the playlist.
  * @param type The object type: “playlist”
  * @param description The playlist description. Only returned for modified, verified playlists, otherwise null.
@@ -46,10 +46,11 @@ public data class SimplePlaylist(
     @SerialName("primary_color") val primaryColor: String? = null,
     val public: Boolean? = null,
     @SerialName("snapshot_id") private val snapshotIdString: String,
-    val tracks: PlaylistTrackInfo,
+    val items: PlaylistTrackInfo,
     val type: String
 ) : CoreObject() {
     val snapshot: PlaylistSnapshot get() = PlaylistSnapshot(snapshotIdString)
+    @Deprecated("Renamed", ReplaceWith("items")) val tracks: PlaylistTrackInfo get() = items
 
     /**
      * Converts this [SimplePlaylist] into a full [Playlist] object with the given
@@ -79,7 +80,7 @@ public data class SimplePlaylist(
  * @param addedAt The date and time the track was added. Note that some very old playlists may return null in this field.
  * @param addedBy The Spotify user who added the track. Note that some very old playlists may return null in this field.
  * @param isLocal Whether this track is a local file or not.
- * @param track Information about the track. In rare occasions, this field may be null if this track's API entry is broken.
+ * @param item Information about the track. In rare occasions, this field may be null if this track's API entry is broken.
  * **Warning:** if this is a podcast, the track will be null if you are using [SpotifyAppApi].
  */
 @Serializable
@@ -88,9 +89,11 @@ public data class PlaylistTrack(
     @SerialName("added_at") val addedAt: String? = null,
     @SerialName("added_by") val addedBy: SpotifyPublicUser? = null,
     @SerialName("is_local") val isLocal: Boolean? = null,
-    @Serializable(with = PlayableSerializer::class) val track: Playable? = null,
+    @Serializable(with = PlayableSerializer::class) val item: Playable? = null,
     @SerialName("video_thumbnail") val videoThumbnail: VideoThumbnail? = null
-)
+) {
+    @Deprecated("Renamed", ReplaceWith("item")) val track: Playable? get() = item
+}
 
 /**
  * Represents a Playlist on Spotify
@@ -110,7 +113,7 @@ public data class PlaylistTrack(
  * @param public The playlist’s public/private status: true the playlist is public, false the playlist is private,
  * null the playlist status is not relevant
  * a specific playlist version
- * @param tracks Information about the tracks of the playlist.
+ * @param items Information about the tracks of the playlist.
  * @param type The object type: “playlist”
  *
  * @property snapshot The version identifier for the current playlist. Can be supplied in other requests to target
@@ -131,12 +134,13 @@ public data class Playlist(
     val owner: SpotifyPublicUser,
     val public: Boolean? = null,
     @SerialName("snapshot_id") private val snapshotIdString: String,
-    val tracks: PagingObject<PlaylistTrack>,
+    val items: PagingObject<PlaylistTrack>,
     val type: String
 ) : CoreObject() {
     val snapshot: PlaylistSnapshot get() = PlaylistSnapshot(snapshotIdString)
+    @Deprecated("Renamed", ReplaceWith("items")) val tracks: PagingObject<PlaylistTrack> get() = items
 
-    override fun getMembersThatNeedApiInstantiation(): List<NeedsApi?> = listOf(tracks, this)
+    override fun getMembersThatNeedApiInstantiation(): List<NeedsApi?> = listOf(items, this)
 }
 
 /**

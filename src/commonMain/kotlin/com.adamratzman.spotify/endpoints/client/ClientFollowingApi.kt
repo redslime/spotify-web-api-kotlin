@@ -41,10 +41,38 @@ public class ClientFollowingApi(api: GenericSpotifyApi) : FollowingApi(api) {
     }
 
     /**
+     * Check to see if the current Spotify user is following one or more specified playlists.
+     *
+     * Checking if the user is privately following a playlist is only possible for the current user when
+     * that user has granted access to the [SpotifyScope.PlaylistReadPrivate] scope.
+     *
+     * Requires the [SpotifyScope.UserLibraryRead] scope.
+     *
+     * **[Api Reference](https://developer.spotify.com/documentation/web-api/reference/check-library-contains)**
+     *
+     * @param playlistIds List of the playlist ids or uris to check. Max 40
+     *
+     * @throws BadRequestException if [playlistIds] contains a non-existing id
+     * @return A list of booleans corresponding to [playlistIds] of whether the current user is following that playlist
+     */
+    public suspend fun isFollowingPlaylists(vararg playlistIds: String): List<Boolean> {
+        requireScopes(SpotifyScope.UserLibraryRead)
+        checkBulkRequesting(40, playlistIds.size)
+        return bulkStatelessRequest(40, playlistIds.toList()) { chunk ->
+            get(
+                endpointBuilder("/me/library/contains")
+                    .with("uris", chunk.joinToString(",") { PlaylistUri(it).uri.encodeUrl() }).toString()
+            ).toList(ListSerializer(Boolean.serializer()), api, json)
+        }.flatten()
+    }
+
+    /**
      * Check to see if the current Spotify user is following the specified playlist.
      *
      * Checking if the user is privately following a playlist is only possible for the current user when
      * that user has granted access to the [SpotifyScope.PlaylistReadPrivate] scope.
+     *
+     * Requires the [SpotifyScope.UserLibraryRead] scope.
      *
      * **[Api Reference](https://developer.spotify.com/documentation/web-api/reference/follow/check-user-following-playlist/)**
      *
@@ -328,9 +356,33 @@ public class ClientFollowingApi(api: GenericSpotifyApi) : FollowingApi(api) {
      *
      * @throws BadRequestException if the playlist is not found
      */
-    public suspend fun unfollowPlaylist(playlist: String): String {
-        requireScopes(SpotifyScope.PlaylistModifyPublic, SpotifyScope.PlaylistModifyPrivate, anyOf = true)
+    public suspend fun unfollowPlaylist(playlist: String) {
+        unfollowPlaylists(playlist)
+    }
 
-        return delete(endpointBuilder("/playlists/${PlaylistUri(playlist).id}/followers").toString())
+    /**
+     * Remove the current user as a follower of one or more playlists.
+     *
+     * Unfollowing a publicly followed playlist for a user requires authorization of the [SpotifyScope.PlaylistModifyPublic] scope;
+     * unfollowing a privately followed playlist requires the [SpotifyScope.PlaylistModifyPrivate] scope.
+     *
+     * Note that the scopes you provide relate only to whether the current user is following the playlist publicly or
+     * privately (i.e. showing others what they are following), not whether the playlist itself is public or private.
+     *
+     * **[Api Reference](https://developer.spotify.com/documentation/web-api/reference/remove-library-items)**
+     *
+     * @param playlistIds The ids or uris of the playlists that are to be no longer followed. Maximum **40**.
+     *
+     * @throws BadRequestException if any of the playlist ids are invalid
+     */
+    public suspend fun unfollowPlaylists(vararg playlistIds: String) {
+        requireScopes(SpotifyScope.PlaylistModifyPublic, SpotifyScope.PlaylistModifyPrivate, anyOf = true)
+        checkBulkRequesting(40, playlistIds.size)
+        bulkStatelessRequest(40, playlistIds.toList()) { chunk ->
+            delete(
+                endpointBuilder("/me/library")
+                    .with("uris", chunk.joinToString(",") { PlaylistUri(it).uri.encodeUrl() }).toString()
+            )
+        }
     }
 }

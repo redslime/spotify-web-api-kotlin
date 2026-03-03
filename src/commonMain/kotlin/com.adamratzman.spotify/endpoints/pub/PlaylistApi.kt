@@ -102,7 +102,7 @@ public open class PlaylistApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
         offset: Int? = null,
         market: Market? = null
     ): PagingObject<PlaylistTrack> = get(
-        endpointBuilder("/playlists/${PlaylistUri(playlist).id.encodeUrl()}/tracks").with("limit", limit)
+        endpointBuilder("/playlists/${PlaylistUri(playlist).id.encodeUrl()}/items").with("limit", limit)
             .with("offset", offset).with("market", market?.getSpotifyId()).toString()
     )
         .toNonNullablePagingObject(PlaylistTrack.serializer(), null, api, json)

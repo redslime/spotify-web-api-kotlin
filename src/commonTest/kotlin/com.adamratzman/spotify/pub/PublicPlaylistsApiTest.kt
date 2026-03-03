@@ -37,14 +37,14 @@ class PublicPlaylistsApiTest : AbstractTest<GenericSpotifyApi>() {
 
         assertEquals("run2", api.playlists.getPlaylist("78eWnYKwDksmCHAjOUNPEj")?.name)
         assertNull(api.playlists.getPlaylist("nope"))
-        assertTrue(api.playlists.getPlaylist("78eWnYKwDksmCHAjOUNPEj")!!.tracks.isNotEmpty())
-        val playlistWithLocalAndNonLocalTracks = api.playlists.getPlaylist("627gNjNzj3sOrSiDm5acc2")!!.tracks
-        assertEquals(LocalTrack::class, playlistWithLocalAndNonLocalTracks[0].track!!::class)
-        assertEquals(Track::class, playlistWithLocalAndNonLocalTracks[1].track!!::class)
+        assertTrue(api.playlists.getPlaylist("78eWnYKwDksmCHAjOUNPEj")!!.items.isNotEmpty())
+        val playlistWithLocalAndNonLocalTracks = api.playlists.getPlaylist("627gNjNzj3sOrSiDm5acc2")!!.items
+        assertEquals(LocalTrack::class, playlistWithLocalAndNonLocalTracks[0].item!!::class)
+        assertEquals(Track::class, playlistWithLocalAndNonLocalTracks[1].item!!::class)
 
         if (api is SpotifyClientApi) {
-            val playlistWithPodcastsTracks = api.playlists.getPlaylist("37i9dQZF1DX8tN3OFXtAqt")!!.tracks
-            assertEquals(PodcastEpisodeTrack::class, playlistWithPodcastsTracks[0].track!!::class)
+            val playlistWithPodcastsTracks = api.playlists.getPlaylist("38he99wNRz1QU6mrOAeyw9")!!.items
+            assertEquals(PodcastEpisodeTrack::class, playlistWithPodcastsTracks[0].item!!::class)
         }
     }
 
@@ -54,13 +54,13 @@ class PublicPlaylistsApiTest : AbstractTest<GenericSpotifyApi>() {
 
         assertTrue(api.playlists.getPlaylistTracks("78eWnYKwDksmCHAjOUNPEj").items.isNotEmpty())
         val playlist = api.playlists.getPlaylistTracks("627gNjNzj3sOrSiDm5acc2")
-        assertEquals(LocalTrack::class, playlist[0].track!!::class)
-        assertEquals(Track::class, playlist[1].track!!::class)
+        assertEquals(LocalTrack::class, playlist[0].item!!::class)
+        assertEquals(Track::class, playlist[1].item!!::class)
         assertFailsWith<SpotifyException.BadRequestException> { api.playlists.getPlaylistTracks("adskjfjkasdf") }
 
         if (api is SpotifyClientApi) {
-            val playlistWithPodcasts = api.playlists.getPlaylistTracks("37i9dQZF1DX8tN3OFXtAqt")
-            assertEquals(PodcastEpisodeTrack::class, playlistWithPodcasts[0].track!!::class)
+            val playlistWithPodcasts = api.playlists.getPlaylistTracks("38he99wNRz1QU6mrOAeyw9")
+            assertEquals(PodcastEpisodeTrack::class, playlistWithPodcasts[0].item!!::class)
         }
     }
 
