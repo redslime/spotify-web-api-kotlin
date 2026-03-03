@@ -2,15 +2,10 @@
 package com.adamratzman.spotify.endpoints.client
 
 import com.adamratzman.spotify.GenericSpotifyApi
-import com.adamratzman.spotify.SpotifyClientApi
 import com.adamratzman.spotify.SpotifyException.BadRequestException
 import com.adamratzman.spotify.SpotifyScope
 import com.adamratzman.spotify.endpoints.pub.FollowingApi
-import com.adamratzman.spotify.models.Artist
-import com.adamratzman.spotify.models.ArtistUri
-import com.adamratzman.spotify.models.CursorBasedPagingObject
-import com.adamratzman.spotify.models.PlaylistUri
-import com.adamratzman.spotify.models.UserUri
+import com.adamratzman.spotify.models.*
 import com.adamratzman.spotify.models.serialization.toCursorBasedPagingObject
 import com.adamratzman.spotify.models.serialization.toList
 import com.adamratzman.spotify.utils.encodeUrl
@@ -84,10 +79,7 @@ public class ClientFollowingApi(api: GenericSpotifyApi) : FollowingApi(api) {
      * @return Whether the current user is following [playlistId]
      */
     public suspend fun isFollowingPlaylist(playlistId: String): Boolean {
-        return isFollowingPlaylist(
-            playlistId,
-            (api as SpotifyClientApi).getUserId()
-        )
+        return isFollowingPlaylists(playlistId)[0]
     }
 
     /**
@@ -97,18 +89,18 @@ public class ClientFollowingApi(api: GenericSpotifyApi) : FollowingApi(api) {
      *
      * **[Api Reference](https://developer.spotify.com/documentation/web-api/reference/follow/check-current-user-follows/)**
      *
-     * @param users List of the user Spotify IDs to check. Max 50
+     * @param users List of the user Spotify IDs to check. Max 40
      *
      * @throws BadRequestException if [users] contains a non-existing id
      * @return A list of booleans corresponding to [users] of whether the current user is following that user
      */
     public suspend fun isFollowingUsers(vararg users: String): List<Boolean> {
         requireScopes(SpotifyScope.UserFollowRead)
-        checkBulkRequesting(50, users.size)
-        return bulkStatelessRequest(50, users.toList()) { chunk ->
+        checkBulkRequesting(40, users.size)
+        return bulkStatelessRequest(40, users.toList()) { chunk ->
             get(
-                endpointBuilder("/me/following/contains").with("type", "user")
-                    .with("ids", chunk.joinToString(",") { UserUri(it).id.encodeUrl() }).toString()
+                endpointBuilder("/me/library/contains")
+                    .with("uris", chunk.joinToString(",") { UserUri(it).uri.encodeUrl() }).toString()
             ).toList(ListSerializer(Boolean.serializer()), api, json)
         }.flatten()
     }
@@ -134,18 +126,18 @@ public class ClientFollowingApi(api: GenericSpotifyApi) : FollowingApi(api) {
      *
      * **[Api Reference](https://developer.spotify.com/documentation/web-api/reference/follow/check-current-user-follows/)**
      *
-     * @param artists List of the artist ids or uris to check. Max 50
+     * @param artists List of the artist ids or uris to check. Max 40
      *
      * @throws BadRequestException if [artists] contains a non-existing id
      * @return A list of booleans corresponding to [artists] of whether the current user is following that artist
      */
     public suspend fun isFollowingArtists(vararg artists: String): List<Boolean> {
         requireScopes(SpotifyScope.UserFollowRead)
-        checkBulkRequesting(50, artists.size)
-        return bulkStatelessRequest(50, artists.toList()) { chunk ->
+        checkBulkRequesting(40, artists.size)
+        return bulkStatelessRequest(40, artists.toList()) { chunk ->
             get(
-                endpointBuilder("/me/following/contains").with("type", "artist")
-                    .with("ids", chunk.joinToString(",") { ArtistUri(it).id.encodeUrl() }).toString()
+                endpointBuilder("/me/library/contains")
+                    .with("uris", chunk.joinToString(",") { ArtistUri(it).uri.encodeUrl() }).toString()
             ).toList(ListSerializer(Boolean.serializer()), api, json)
         }.flatten()
     }
@@ -194,17 +186,17 @@ public class ClientFollowingApi(api: GenericSpotifyApi) : FollowingApi(api) {
      *
      * **[Api Reference](https://developer.spotify.com/documentation/web-api/reference/follow/follow-artists-users/)**
      *
-     * @param users User ids or uris. Maximum **50**.
+     * @param users User ids or uris. Maximum **40**.
      *
      * @throws BadRequestException if an invalid id is provided
      */
     public suspend fun followUsers(vararg users: String) {
         requireScopes(SpotifyScope.UserFollowModify)
-        checkBulkRequesting(50, users.size)
-        bulkStatelessRequest(50, users.toList()) { chunk ->
+        checkBulkRequesting(40, users.size)
+        bulkStatelessRequest(40, users.toList()) { chunk ->
             put(
-                endpointBuilder("/me/following").with("type", "user")
-                    .with("ids", chunk.joinToString(",") { UserUri(it).id.encodeUrl() }).toString()
+                endpointBuilder("/me/library")
+                    .with("uris", chunk.joinToString(",") { UserUri(it).uri.encodeUrl() }).toString()
             )
         }
     }
@@ -227,17 +219,17 @@ public class ClientFollowingApi(api: GenericSpotifyApi) : FollowingApi(api) {
      *
      * **[Api Reference](https://developer.spotify.com/documentation/web-api/reference/follow/follow-artists-users/)**
      *
-     * @param artists User ids or uris. Maximum **50**.
+     * @param artists User ids or uris. Maximum **40**.
      *
      * @throws BadRequestException if an invalid id is provided
      */
     public suspend fun followArtists(vararg artists: String) {
         requireScopes(SpotifyScope.UserFollowModify)
-        checkBulkRequesting(50, artists.size)
-        bulkStatelessRequest(50, artists.toList()) { chunk ->
+        checkBulkRequesting(40, artists.size)
+        bulkStatelessRequest(40, artists.toList()) { chunk ->
             put(
-                endpointBuilder("/me/following").with("type", "artist")
-                    .with("ids", chunk.joinToString(",") { ArtistUri(it).id.encodeUrl() }).toString()
+                endpointBuilder("/me/library")
+                    .with("uris", chunk.joinToString(",") { ArtistUri(it).uri.encodeUrl() }).toString()
             )
         }
     }
@@ -256,18 +248,27 @@ public class ClientFollowingApi(api: GenericSpotifyApi) : FollowingApi(api) {
      *
      * @param playlist the id or uri of the playlist. Any playlist can be followed, regardless of its
      * public/private status, as long as you know its playlist ID.
-     * @param followPublicly Defaults to true. If true the playlist will be included in user’s public playlists,
-     * if false it will remain private. To be able to follow playlists privately, the user must have granted the playlist-modify-private scope.
      *
      * @throws BadRequestException if the playlist is not found
      */
-    public suspend fun followPlaylist(playlist: String, followPublicly: Boolean = true): String {
+    public suspend fun followPlaylist(playlist: String): String {
         requireScopes(SpotifyScope.PlaylistModifyPublic, SpotifyScope.PlaylistModifyPrivate, anyOf = true)
 
         return put(
-            endpointBuilder("/playlists/${PlaylistUri(playlist).id}/followers").toString(),
-            "{\"public\": $followPublicly}"
+            endpointBuilder("/me/library")
+                .with("uris", listOf(PlaylistUri(playlist).uri.encodeUrl()).joinToString(","))
+                .toString()
         )
+    }
+
+    /**
+     * Deprecated, followPublicly parameter is not implemented anymore
+     *
+     * @see followPlaylist
+     */
+    @Deprecated("Moved", ReplaceWith("followPlaylist(playlist)"))
+    public suspend fun followPlaylist(playlist: String, followPublicly: Boolean = true): String {
+        return followPlaylist(playlist)
     }
 
     /**
@@ -290,17 +291,17 @@ public class ClientFollowingApi(api: GenericSpotifyApi) : FollowingApi(api) {
      *
      * **[Api Reference](https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-artists-users/)**
      *
-     * @param users The users to be unfollowed from. Maximum **50**.
+     * @param users The users to be unfollowed from. Maximum **40**.
      *
      * @throws BadRequestException if an invalid id is provided
      */
     public suspend fun unfollowUsers(vararg users: String) {
         requireScopes(SpotifyScope.UserFollowModify)
-        checkBulkRequesting(50, users.size)
-        bulkStatelessRequest(50, users.toList()) { list ->
+        checkBulkRequesting(40, users.size)
+        bulkStatelessRequest(40, users.toList()) { list ->
             delete(
-                endpointBuilder("/me/following").with("type", "user")
-                    .with("ids", list.joinToString(",") { UserUri(it).id.encodeUrl() }).toString()
+                endpointBuilder("/me/library")
+                    .with("uris", list.joinToString(",") { UserUri(it).uri.encodeUrl() }).toString()
             )
         }
     }
@@ -325,18 +326,18 @@ public class ClientFollowingApi(api: GenericSpotifyApi) : FollowingApi(api) {
      *
      * **[Api Reference](https://developer.spotify.com/documentation/web-api/reference/follow/unfollow-artists-users/)**
      *
-     * @param artists The artists to be unfollowed from. Maximum **50**.
+     * @param artists The artists to be unfollowed from. Maximum **40**.
      *
      *
      * @throws BadRequestException if an invalid id is provided
      */
     public suspend fun unfollowArtists(vararg artists: String) {
         requireScopes(SpotifyScope.UserFollowModify)
-        checkBulkRequesting(50, artists.size)
-        bulkStatelessRequest(50, artists.toList()) { list ->
+        checkBulkRequesting(40, artists.size)
+        bulkStatelessRequest(40, artists.toList()) { list ->
             delete(
-                endpointBuilder("/me/following").with("type", "artist")
-                    .with("ids", list.joinToString(",") { ArtistUri(it).id.encodeUrl() }).toString()
+                endpointBuilder("/me/library")
+                    .with("uris", list.joinToString(",") { ArtistUri(it).uri.encodeUrl() }).toString()
             )
         }
     }
