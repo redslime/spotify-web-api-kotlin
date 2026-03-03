@@ -3,6 +3,7 @@ package com.adamratzman.spotify.endpoints.pub
 
 import com.adamratzman.spotify.GenericSpotifyApi
 import com.adamratzman.spotify.SpotifyException.BadRequestException
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.http.SpotifyEndpoint
 import com.adamratzman.spotify.models.ArtistUri
 import com.adamratzman.spotify.models.ErrorObject
@@ -39,6 +40,7 @@ public class BrowseApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      *
      * @return List of genre ids
      */
+    @SpotifyExtendedQuota
     public suspend fun getAvailableGenreSeeds(): List<String> =
         get(endpointBuilder("/recommendations/available-genre-seeds").toString()).toInnerArray(
             ListSerializer(String.serializer()),
@@ -59,6 +61,7 @@ public class BrowseApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      * @throws BadRequestException if filter parameters are illegal
      * @return [PagingObject] of new album released, ordered by release date (descending)
      */
+    @SpotifyExtendedQuota
     public suspend fun getNewReleases(
         limit: Int? = api.spotifyApiOptions.defaultLimit,
         offset: Int? = null,
@@ -88,6 +91,7 @@ public class BrowseApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      * @throws BadRequestException if filter parameters are illegal or [locale] does not exist
      * @return [FeaturedPlaylists] object with the current featured message and featured playlists
      */
+    @SpotifyExtendedQuota
     public suspend fun getFeaturedPlaylists(
         limit: Int? = api.spotifyApiOptions.defaultLimit,
         offset: Int? = null,
@@ -118,6 +122,7 @@ public class BrowseApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      *
      * @return Default category list if [locale] is invalid, otherwise the localized PagingObject
      */
+    @SpotifyExtendedQuota
     public suspend fun getCategoryList(
         limit: Int? = api.spotifyApiOptions.defaultLimit,
         offset: Int? = null,
@@ -145,6 +150,7 @@ public class BrowseApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      *
      * @throws BadRequestException if [categoryId] is not found or [locale] does not exist on Spotify
      */
+    @SpotifyExtendedQuota
     public suspend fun getCategory(
         categoryId: String,
         market: Market? = null,
@@ -167,6 +173,7 @@ public class BrowseApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      * @throws BadRequestException if [categoryId] is not found or filters are illegal
      * @return [PagingObject] of top playlists tagged with [categoryId]
      */
+    @SpotifyExtendedQuota
     public suspend fun getPlaylistsForCategory(
         categoryId: String,
         limit: Int? = api.spotifyApiOptions.defaultLimit,
@@ -211,6 +218,7 @@ public class BrowseApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      *
      * @throws BadRequestException if any filter is applied illegally
      */
+    @SpotifyExtendedQuota
     public suspend fun getTrackRecommendations(
         seedArtists: List<String>? = null,
         seedGenres: List<String>? = null,
@@ -265,6 +273,7 @@ public class BrowseApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      * @throws BadRequestException if any filter is applied illegally
      *
      */
+    @SpotifyExtendedQuota
     public suspend fun getRecommendations(
         seedArtists: List<String>? = null,
         seedGenres: List<String>? = null,

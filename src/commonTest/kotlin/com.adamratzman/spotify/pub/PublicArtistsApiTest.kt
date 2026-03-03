@@ -51,13 +51,13 @@ class PublicArtistsApiTest : AbstractTest<GenericSpotifyApi>() {
         assertTrue(
             api.artists.getArtistAlbums(
                 "7wjeXCtRND2ZdKfMJFu6JC",
-                10,
                 include = arrayOf(ArtistApi.AlbumInclusionStrategy.Album)
             )
                 .items.asSequence().map { it.name }.contains("Louane")
         )
     }
 
+    @Ignore // requires extended quota mode
     @Test
     fun testGetRelatedArtists(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetRelatedArtists.name)

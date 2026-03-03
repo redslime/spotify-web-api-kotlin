@@ -5,6 +5,7 @@ import com.adamratzman.spotify.GenericSpotifyApi
 import com.adamratzman.spotify.SpotifyAppApi
 import com.adamratzman.spotify.SpotifyException.BadRequestException
 import com.adamratzman.spotify.SpotifyScope
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.http.SpotifyEndpoint
 import com.adamratzman.spotify.models.PagingObject
 import com.adamratzman.spotify.models.Playlist
@@ -50,6 +51,7 @@ public open class PlaylistApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      * @throws BadRequestException if the user is not found (404)
      *
      */
+    @SpotifyExtendedQuota
     public suspend fun getUserPlaylists(
         user: String,
         limit: Int? = api.spotifyApiOptions.defaultLimit,

@@ -3,6 +3,7 @@ package com.adamratzman.spotify.endpoints.pub
 
 import com.adamratzman.spotify.GenericSpotifyApi
 import com.adamratzman.spotify.SpotifyException.BadRequestException
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.http.SpotifyEndpoint
 import com.adamratzman.spotify.models.Album
 import com.adamratzman.spotify.models.AlbumUri
@@ -52,6 +53,7 @@ public class AlbumApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      *
      * @return List of [Album] objects or null if the album could not be found, in the order requested
      */
+    @SpotifyExtendedQuota
     public suspend fun getAlbums(vararg albums: String, market: Market? = null): List<Album?> {
         checkBulkRequesting(20, albums.size)
         return bulkStatelessRequest(20, albums.toList()) { chunk ->

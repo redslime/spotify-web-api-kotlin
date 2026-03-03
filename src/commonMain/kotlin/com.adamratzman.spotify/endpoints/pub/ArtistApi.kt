@@ -3,6 +3,7 @@ package com.adamratzman.spotify.endpoints.pub
 
 import com.adamratzman.spotify.GenericSpotifyApi
 import com.adamratzman.spotify.SpotifyException.BadRequestException
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.http.SpotifyEndpoint
 import com.adamratzman.spotify.models.*
 import com.adamratzman.spotify.models.serialization.toInnerArray
@@ -47,6 +48,7 @@ public class ArtistApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      * @return List of [Artist] objects or null if the artist could not be found, in the order requested.
      * @throws BadRequestException if any of the [artists] are not found, *if using client api*
      */
+    @SpotifyExtendedQuota
     public suspend fun getArtists(vararg artists: String): List<Artist?> {
         checkBulkRequesting(50, artists.size)
 
@@ -116,6 +118,7 @@ public class ArtistApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      * @throws BadRequestException if tracks are not available in the specified [Market] or the [artist] is not found
      * @return List of the top [Track]s of an artist in the given market
      */
+    @SpotifyExtendedQuota
     public suspend fun getArtistTopTracks(artist: String, market: Market = Market.US): List<Track> = get(
         endpointBuilder("/artists/${ArtistUri(artist).id.encodeUrl()}/top-tracks").with(
             "country",
@@ -134,6 +137,7 @@ public class ArtistApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      * @throws BadRequestException if the [artist] is not found
      * @return List of *never-null*, but possibly empty [Artist]s representing similar artists
      */
+    @SpotifyExtendedQuota
     public suspend fun getRelatedArtists(artist: String): List<Artist> =
         get(endpointBuilder("/artists/${ArtistUri(artist).id.encodeUrl()}/related-artists").toString())
             .toObject(ArtistList.serializer(), api, json).artists.filterNotNull()

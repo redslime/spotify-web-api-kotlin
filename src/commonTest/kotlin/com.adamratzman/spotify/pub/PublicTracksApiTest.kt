@@ -36,6 +36,7 @@ class PublicTracksApiTest : AbstractTest<GenericSpotifyApi>() {
         )
     }
 
+    @Ignore // requires extended quota mode
     @Test
     fun testAudioAnalysis(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testAudioAnalysis.name)
@@ -44,6 +45,7 @@ class PublicTracksApiTest : AbstractTest<GenericSpotifyApi>() {
         assertEquals("165.61333", api.tracks.getAudioAnalysis("0o4jSZBxOQUiDKzMJSqR4x").track.duration.toString())
     }
 
+    @Ignore // requires extended quota mode
     @Test
     fun testAudioFeatures(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testAudioFeatures.name)

@@ -6,6 +6,7 @@ import com.adamratzman.spotify.SpotifyAppApi
 import com.adamratzman.spotify.SpotifyClientApi
 import com.adamratzman.spotify.SpotifyException.BadRequestException
 import com.adamratzman.spotify.SpotifyScope
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.http.SpotifyEndpoint
 import com.adamratzman.spotify.models.Episode
 import com.adamratzman.spotify.models.EpisodeList
@@ -63,6 +64,7 @@ public open class EpisodeApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      * @return List of possibly-null [Episode] objects.
      * @throws BadRequestException If any invalid show id is provided, if this is a [SpotifyClientApi]
      */
+    @SpotifyExtendedQuota
     public suspend fun getEpisodes(vararg ids: String, market: Market): List<Episode?> {
         checkBulkRequesting(50, ids.size)
 

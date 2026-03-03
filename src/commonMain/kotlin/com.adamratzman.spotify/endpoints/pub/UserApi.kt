@@ -2,6 +2,7 @@
 package com.adamratzman.spotify.endpoints.pub
 
 import com.adamratzman.spotify.GenericSpotifyApi
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.http.SpotifyEndpoint
 import com.adamratzman.spotify.models.SpotifyPublicUser
 import com.adamratzman.spotify.models.UserUri
@@ -24,6 +25,7 @@ public open class UserApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      *
      * @return All publicly-available information about the user
      */
+    @SpotifyExtendedQuota
     public suspend fun getProfile(user: String): SpotifyPublicUser? = catch(/* some incorrect user ids will return 500 */ catchInternalServerError = true) {
         get(endpointBuilder("/users/${UserUri(user).id.encodeUrl()}").toString())
             .toObject(SpotifyPublicUser.serializer(), api, json)

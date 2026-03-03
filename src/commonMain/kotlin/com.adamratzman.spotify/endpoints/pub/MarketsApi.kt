@@ -2,6 +2,7 @@
 package com.adamratzman.spotify.endpoints.pub
 
 import com.adamratzman.spotify.GenericSpotifyApi
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.http.SpotifyEndpoint
 import com.adamratzman.spotify.models.serialization.toInnerArray
 import com.adamratzman.spotify.utils.Market
@@ -16,6 +17,7 @@ public class MarketsApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      *
      * @return List of [Market]
      */
+    @SpotifyExtendedQuota
     public suspend fun getAvailableMarkets(): List<Market> {
         return get(endpointBuilder("/markets").toString()).toInnerArray(
             ListSerializer(String.serializer()),

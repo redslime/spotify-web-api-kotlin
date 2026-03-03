@@ -5,13 +5,9 @@ import com.adamratzman.spotify.GenericSpotifyApi
 import com.adamratzman.spotify.SpotifyAppApi
 import com.adamratzman.spotify.SpotifyException.BadRequestException
 import com.adamratzman.spotify.SpotifyScope
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.http.SpotifyEndpoint
-import com.adamratzman.spotify.models.PagingObject
-import com.adamratzman.spotify.models.Show
-import com.adamratzman.spotify.models.ShowList
-import com.adamratzman.spotify.models.ShowUri
-import com.adamratzman.spotify.models.SimpleEpisode
-import com.adamratzman.spotify.models.SimpleShow
+import com.adamratzman.spotify.models.*
 import com.adamratzman.spotify.models.serialization.toNonNullablePagingObject
 import com.adamratzman.spotify.models.serialization.toObject
 import com.adamratzman.spotify.utils.Market
@@ -65,6 +61,7 @@ public open class ShowApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      *
      * @return List of possibly-null [SimpleShow] objects, if the show was not found or invalid ids were provided.
      */
+    @SpotifyExtendedQuota
     public suspend fun getShows(vararg ids: String, market: Market): List<SimpleShow?> {
         checkBulkRequesting(50, ids.size)
         return bulkStatelessRequest(50, ids.toList()) { chunk ->

@@ -22,6 +22,7 @@ import kotlin.test.assertNotSame
 import kotlin.test.assertTrue
 
 class BrowseApiTest : AbstractTest<GenericSpotifyApi>() {
+    @Ignore // requires extended quota mode
     @Test
     fun testGenreSeeds(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGenreSeeds.name)
@@ -72,6 +73,7 @@ class BrowseApiTest : AbstractTest<GenericSpotifyApi>() {
         )
     }
 
+    @Ignore // requires extended quota mode
     @Test
     fun testGetFeaturedPlaylists(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetFeaturedPlaylists.name)
@@ -96,6 +98,7 @@ class BrowseApiTest : AbstractTest<GenericSpotifyApi>() {
         assertTrue(api.browse.getNewReleases(limit = 6, offset = 44, market = Market.US).items.isNotEmpty())
     }
 
+    @Ignore // requires extended quota mode
     @Test
     fun testGetRecommendations(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetRecommendations.name)
