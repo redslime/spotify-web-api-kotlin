@@ -27,7 +27,7 @@ import kotlinx.serialization.json.Json
  * @param scopes Spotify scopes the api instance should be able to access for the user
  * @param clientId Spotify [client id](https://developer.spotify.com/documentation/general/guides/app-settings/)
  * @param redirectUri Spotify [redirect uri](https://developer.spotify.com/documentation/general/guides/app-settings/)
- * @param isImplicitGrantFlow Whether the authorization url should be for the Implicit Grant flow, otherwise for Authorization Code flo
+ * @param isImplicitGrantFlow Whether the authorization url should be for the Implicit Grant flow, otherwise for Authorization Code flow (Deprecated)
  * @param shouldShowDialog If [isImplicitGrantFlow] is true, whether or not to force the user to approve the app again if they’ve already done so.
  * @param state This provides protection against attacks such as cross-site request forgery.
  */
@@ -107,11 +107,14 @@ public fun getSpotifyPkceCodeChallenge(codeVerifier: String): String {
  *
  * Use case: I have a token obtained after implicit grant authorization.
  *
+ * * **Deprecated**. Read how to migrate [here](https://developer.spotify.com/documentation/web-api/tutorials/migration-implicit-auth-code).
+ *
  * @param clientId Spotify [client id](https://developer.spotify.com/documentation/general/guides/app-settings/)
  * @param token Token created from the hash response in the implicit grant callback
  *
  * @return [SpotifyImplicitGrantApi] that can immediately begin making calls
  */
+@Deprecated("Removed")
 public fun spotifyImplicitGrantApi(
     clientId: String?,
     token: Token
@@ -127,12 +130,15 @@ public fun spotifyImplicitGrantApi(
  *
  * Use case: I have a token obtained after implicit grant authorization.
  *
+ * **Deprecated**. Read how to migrate [here](https://developer.spotify.com/documentation/web-api/tutorials/migration-implicit-auth-code).
+ *
  * @param clientId Spotify [client id](https://developer.spotify.com/documentation/general/guides/app-settings/)
  * @param token Token created from the hash response in the implicit grant callback
  * @param block Block to set API options
  *
  * @return [SpotifyImplicitGrantApi] that can immediately begin making calls
  */
+@Deprecated("Removed")
 public fun spotifyImplicitGrantApi(
     clientId: String?,
     token: Token,
@@ -1134,7 +1140,7 @@ public class SpotifyUserAuthorization(
  * @param requestTimeoutMillis The maximum time, in milliseconds, before terminating an http request
  * @param refreshTokenProducer Provide if you want to use your own logic when refreshing a Spotify token
  * @param onTokenRefresh Provide if you want to act on token refresh event
- * @param requiredScopes Scopes that your application requires to function (only applicable to [SpotifyClientApi] and [SpotifyImplicitGrantApi]).
+ * @param requiredScopes Scopes that your application requires to function (only applicable to [SpotifyClientApi]).
  * @param proxyBaseUrl Provide if you have a proxy base URL that you would like to use instead of the Spotify API base
  * (https://api.spotify.com/v1).
  * @param retryOnInternalServerErrorTimes Whether and how often to retry once if an internal server error (500..599) has been received. Set to 0
