@@ -657,6 +657,7 @@ public open class SpotifyClientApi(
  * An API instance created through implicit grant flow, with access to private information
  * managed through the scopes exposed in [token]. [token] is not refreshable and is only accessible for limited time.
  */
+@Deprecated("Removed")
 public class SpotifyImplicitGrantApi(
     clientId: String?,
     token: Token,
