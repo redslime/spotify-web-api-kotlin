@@ -121,6 +121,8 @@ to the sections below or the [Spotify authorization guide](https://developer.spo
 
 **Note**: You can use the online [Spotify OAuth Token Generator](https://adamratzman.com/projects/spotify/generate-token) tool to generate a client token for local testing.
 
+**Important**: As of March 2026, to use any API endpoints, you must have a Spotify Premium subscription, unless you are in extended quota mode.
+
 ### SpotifyAppApi
 This provides access only to public Spotify endpoints.
 Use this when you have a server-side application. Note that implicit grant authorization 
