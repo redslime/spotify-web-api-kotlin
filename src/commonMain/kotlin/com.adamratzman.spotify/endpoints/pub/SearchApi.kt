@@ -105,14 +105,14 @@ public open class SearchApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      * @param filters Optional list of [SearchFilter] to apply to this search.
      * @param searchTypes A list of item types to search across. Search results include hits from all the specified item types.
      * @param limit Maximum number of results to return.
-    Default: 20
+    Default: 5
     Minimum: 1
-    Maximum: 50
+    Maximum: 10
     Note: The limit is applied within each type, not on the total response.
     For example, if the limit value is 3 and the type is artist,album, the response contains 3 artists and 3 albums.
      * @param offset The index of the first result to return.
     Default: 0 (the first result).
-    Maximum offset (including limit): 10,00.
+    Maximum offset (including limit): 1000.
     Use with limit to get the next page of search results.
      * @param market If a country code is specified, only artists, albums, and tracks with content that is playable in that market is returned. Note:
     - Playlist results are not affected by the market parameter.
@@ -127,7 +127,7 @@ public open class SearchApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
         query: String,
         vararg searchTypes: SearchType,
         filters: List<SearchFilter> = listOf(),
-        limit: Int? = api.spotifyApiOptions.defaultLimit,
+        limit: Int? = 5,
         offset: Int? = null,
         market: Market? = null,
         includeExternal: Boolean? = null,

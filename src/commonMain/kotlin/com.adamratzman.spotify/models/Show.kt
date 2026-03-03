@@ -2,6 +2,7 @@
 package com.adamratzman.spotify.models
 
 import com.adamratzman.spotify.SpotifyRestAction
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.utils.Locale
 import com.adamratzman.spotify.utils.Market
 import kotlinx.serialization.SerialName
@@ -25,7 +26,7 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 public data class SimpleShow(
-    @SerialName("available_markets") private val availableMarketsString: List<String> = listOf(),
+    @SpotifyExtendedQuota @SerialName("available_markets") private val availableMarketsString: List<String> = listOf(),
     @SerialName("external_urls") override val externalUrlsString: Map<String, String>,
     val copyrights: List<SpotifyCopyright>,
     val description: String? = null,
@@ -37,11 +38,11 @@ public data class SimpleShow(
     @SerialName("languages") private val languagesString: List<String>,
     @SerialName("media_type") val mediaType: String,
     val name: String,
-    val publisher: String,
+    @SpotifyExtendedQuota val publisher: String? = null,
     val type: String,
     override val uri: SpotifyUri
 ) : CoreObject() {
-    val availableMarkets: List<Market> get() = availableMarketsString.map { Market.valueOf(it) }
+    @SpotifyExtendedQuota val availableMarkets: List<Market> get() = availableMarketsString.map { Market.valueOf(it) }
 
     val languages: List<Locale> get() = languagesString.map { Locale.valueOf(it.replace("-", "_")) }
 
@@ -81,7 +82,7 @@ public data class SimpleShow(
  */
 @Serializable
 public data class Show(
-    @SerialName("available_markets") private val availableMarketsString: List<String> = listOf(),
+    @SpotifyExtendedQuota @SerialName("available_markets") private val availableMarketsString: List<String> = listOf(),
     val copyrights: List<SpotifyCopyright>,
     val description: String? = null,
     val explicit: Boolean,
@@ -94,11 +95,11 @@ public data class Show(
     @SerialName("languages") val languagesString: List<String>,
     @SerialName("media_type") val mediaType: String,
     val name: String,
-    val publisher: String,
+    @SpotifyExtendedQuota val publisher: String? = null,
     val type: String,
     override val uri: ShowUri
 ) : CoreObject() {
-    val availableMarkets: List<Market> get() = availableMarketsString.map { Market.valueOf(it) }
+    @SpotifyExtendedQuota val availableMarkets: List<Market> get() = availableMarketsString.map { Market.valueOf(it) }
 
     val languages: List<Locale> get() = languagesString.map { Locale.valueOf(it.replace("-", "_")) }
 

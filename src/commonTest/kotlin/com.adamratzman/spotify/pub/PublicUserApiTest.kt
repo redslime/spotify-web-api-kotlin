@@ -18,7 +18,7 @@ class PublicUserApiTest : AbstractTest<GenericSpotifyApi>() {
     fun testPublicUser(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testPublicUser.name)
 
-        assertTrue(catch { api.users.getProfile("adamratzman1")!!.followers.total } != null)
+        assertTrue(catch { api.users.getProfile("adamratzman1")!!.followers?.total } != null)
         assertNull(api.users.getProfile("ejwkfjwkerfjkwerjkfjkwerfjkjksdfjkasdf"))
     }
 }

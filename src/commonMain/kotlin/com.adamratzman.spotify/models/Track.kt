@@ -2,6 +2,7 @@
 package com.adamratzman.spotify.models
 
 import com.adamratzman.spotify.SpotifyRestAction
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.utils.Market
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -38,8 +39,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class SimpleTrack(
     @SerialName("external_urls") override val externalUrlsString: Map<String, String>,
-    @SerialName("available_markets") private val availableMarketsString: List<String> = listOf(),
-    @SerialName("external_ids") private val externalIdsString: Map<String, String> = hashMapOf(),
+    @SpotifyExtendedQuota @SerialName("available_markets") private val availableMarketsString: List<String> = listOf(),
+    @SpotifyExtendedQuota @SerialName("external_ids") private val externalIdsString: Map<String, String> = hashMapOf(),
     override val href: String,
     override val id: String,
     override val uri: SpotifyUri,
@@ -49,18 +50,18 @@ public data class SimpleTrack(
     @SerialName("duration_ms") val durationMs: Int,
     val explicit: Boolean,
     @SerialName("is_playable") val isPlayable: Boolean = true,
-    @SerialName("linked_from") override val linkedTrack: LinkedTrack? = null,
+    @SpotifyExtendedQuota @SerialName("linked_from") override val linkedTrack: LinkedTrack? = null,
     val name: String,
     @SerialName("preview_url") val previewUrl: String? = null,
     @SerialName("track_number") val trackNumber: Int,
     val type: String,
     @SerialName("is_local") val isLocal: Boolean? = null,
-    val popularity: Double? = null,
+    @SpotifyExtendedQuota val popularity: Double? = null,
     val restrictions: Restrictions? = null
 ) : RelinkingAvailableResponse() {
-    val availableMarkets: List<Market> get() = availableMarketsString.map { Market.valueOf(it) }
+    @SpotifyExtendedQuota val availableMarkets: List<Market> get() = availableMarketsString.map { Market.valueOf(it) }
 
-    val externalIds: List<ExternalId> get() = externalIdsString.map { ExternalId(it.key, it.value) }
+    @SpotifyExtendedQuota val externalIds: List<ExternalId> get() = externalIdsString.map { ExternalId(it.key, it.value) }
 
     val length: Int get() = durationMs
 
@@ -81,6 +82,7 @@ public data class SimpleTrack(
     public fun toFullTrackRestAction(market: Market? = null): SpotifyRestAction<Track?> =
         SpotifyRestAction { toFullTrack(market) }
 
+    @OptIn(SpotifyExtendedQuota::class)
     override fun getMembersThatNeedApiInstantiation(): List<NeedsApi?> = artists + linkedTrack + this
 }
 
@@ -125,8 +127,8 @@ public data class SimpleTrack(
 @Serializable
 public data class Track(
     @SerialName("external_urls") override val externalUrlsString: Map<String, String>,
-    @SerialName("external_ids") private val externalIdsString: Map<String, String> = hashMapOf(),
-    @SerialName("available_markets") private val availableMarketsString: List<String> = listOf(),
+    @SpotifyExtendedQuota @SerialName("external_ids") private val externalIdsString: Map<String, String> = hashMapOf(),
+    @SpotifyExtendedQuota @SerialName("available_markets") private val availableMarketsString: List<String> = listOf(),
     override val href: String,
     override val id: String,
     override val uri: PlayableUri,
@@ -137,9 +139,9 @@ public data class Track(
     @SerialName("disc_number") val discNumber: Int,
     @SerialName("duration_ms") val durationMs: Int,
     val explicit: Boolean,
-    @SerialName("linked_from") override val linkedTrack: LinkedTrack? = null,
+    @SpotifyExtendedQuota @SerialName("linked_from") override val linkedTrack: LinkedTrack? = null,
     val name: String,
-    val popularity: Double,
+    @SpotifyExtendedQuota val popularity: Double? = null,
     @SerialName("preview_url") val previewUrl: String? = null,
     @SerialName("track_number") val trackNumber: Int,
     override val type: String,
@@ -149,12 +151,13 @@ public data class Track(
     val episode: Boolean? = null,
     val track: Boolean? = null
 ) : RelinkingAvailableResponse(), Playable {
-    val availableMarkets: List<Market> get() = availableMarketsString.map { Market.valueOf(it) }
+    @SpotifyExtendedQuota val availableMarkets: List<Market> get() = availableMarketsString.map { Market.valueOf(it) }
 
-    val externalIds: List<ExternalId> get() = externalIdsString.map { ExternalId(it.key, it.value) }
+    @SpotifyExtendedQuota val externalIds: List<ExternalId> get() = externalIdsString.map { ExternalId(it.key, it.value) }
 
     val length: Int get() = durationMs
 
+    @OptIn(SpotifyExtendedQuota::class)
     override fun getMembersThatNeedApiInstantiation(): List<NeedsApi?> = artists + album + linkedTrack + this
 }
 

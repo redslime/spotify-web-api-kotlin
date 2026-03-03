@@ -2,6 +2,7 @@
 package com.adamratzman.spotify.models
 
 import com.adamratzman.spotify.SpotifyScope
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -36,13 +37,13 @@ public data class SpotifyUserInformation(
     override val id: String,
     override val uri: UserUri,
 
-    val country: String? = null,
+    @SpotifyExtendedQuota val country: String? = null,
     @SerialName("display_name") val displayName: String? = null,
-    val email: String? = null,
-    val followers: Followers,
+    @SpotifyExtendedQuota val email: String? = null,
+    @SpotifyExtendedQuota val followers: Followers? = null,
     val images: List<SpotifyImage>? = null,
-    val product: String? = null,
-    @SerialName("explicit_content") val explicitContentSettings: ExplicitContentSettings? = null,
+    @SpotifyExtendedQuota val product: String? = null,
+    @SpotifyExtendedQuota @SerialName("explicit_content") val explicitContentSettings: ExplicitContentSettings? = null,
     val type: String
 ) : CoreObject() {
     override fun getMembersThatNeedApiInstantiation(): List<NeedsApi?> = listOf(this)
@@ -66,7 +67,7 @@ public data class SpotifyPublicUser(
     override val uri: UserUri,
 
     @SerialName("display_name") val displayName: String? = null,
-    val followers: Followers = Followers(null, -1),
+    @SpotifyExtendedQuota val followers: Followers? = Followers(null, -1),
     val images: List<SpotifyImage> = listOf(),
     val type: String
 ) : CoreObject() {

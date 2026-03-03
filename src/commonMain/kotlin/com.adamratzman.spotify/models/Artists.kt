@@ -2,6 +2,7 @@
 package com.adamratzman.spotify.models
 
 import com.adamratzman.spotify.SpotifyRestAction
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -57,11 +58,11 @@ public data class Artist(
     override val id: String,
     override val uri: ArtistUri,
 
-    val followers: Followers,
+    @SpotifyExtendedQuota val followers: Followers? = null,
     val genres: List<String>,
     val images: List<SpotifyImage>? = null,
     val name: String? = null,
-    val popularity: Double,
+    @SpotifyExtendedQuota val popularity: Double? = null,
     val type: String
 ) : CoreObject() {
     override fun getMembersThatNeedApiInstantiation(): List<NeedsApi?> = listOf(this)

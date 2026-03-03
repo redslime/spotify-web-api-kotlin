@@ -2,6 +2,7 @@
 package com.adamratzman.spotify.models
 
 import com.adamratzman.spotify.SpotifyRestAction
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.utils.Market
 import com.adamratzman.spotify.utils.match
 import kotlinx.serialization.SerialName
@@ -34,7 +35,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 public data class SimpleAlbum(
     @SerialName("album_type") private val albumTypeString: String,
-    @SerialName("available_markets") private val availableMarketsString: List<String> = listOf(),
+    @SpotifyExtendedQuota @SerialName("available_markets") private val availableMarketsString: List<String> = listOf(),
     @SerialName("external_urls") override val externalUrlsString: Map<String, String>,
     override val href: String,
     override val id: String,
@@ -48,9 +49,9 @@ public data class SimpleAlbum(
     @SerialName("release_date") private val releaseDateString: String? = null,
     @SerialName("release_date_precision") val releaseDatePrecisionString: String? = null,
     @SerialName("total_tracks") val totalTracks: Int? = null,
-    @SerialName("album_group") private val albumGroupString: String? = null
+    @SpotifyExtendedQuota @SerialName("album_group") private val albumGroupString: String? = null
 ) : CoreObject() {
-    val availableMarkets: List<Market> get() = availableMarketsString.map { Market.valueOf(it) }
+    @SpotifyExtendedQuota val availableMarkets: List<Market> get() = availableMarketsString.map { Market.valueOf(it) }
 
     val albumType: AlbumResultType
         get() = albumTypeString.let { _ ->
@@ -59,7 +60,7 @@ public data class SimpleAlbum(
 
     val releaseDate: ReleaseDate? get() = releaseDateString?.let { getReleaseDate(releaseDateString) }
 
-    val albumGroup: AlbumResultType?
+    @SpotifyExtendedQuota val albumGroup: AlbumResultType?
         get() = albumGroupString?.let { _ ->
             AlbumResultType.entries.find { it.id == albumGroupString }
         }
@@ -132,8 +133,8 @@ public enum class AlbumResultType(public val id: String) {
 @Serializable
 public data class Album(
     @SerialName("album_type") private val albumTypeString: String,
-    @SerialName("available_markets") private val availableMarketsString: List<String> = listOf(),
-    @SerialName("external_ids") private val externalIdsString: Map<String, String> = hashMapOf(),
+    @SpotifyExtendedQuota @SerialName("available_markets") private val availableMarketsString: List<String> = listOf(),
+    @SpotifyExtendedQuota @SerialName("external_ids") private val externalIdsString: Map<String, String> = hashMapOf(),
     @SerialName("external_urls") override val externalUrlsString: Map<String, String> = mapOf(),
     override val href: String,
     override val id: String,
@@ -143,9 +144,9 @@ public data class Album(
     val copyrights: List<SpotifyCopyright>,
     val genres: List<String>,
     val images: List<SpotifyImage>? = null,
-    val label: String,
+    @SpotifyExtendedQuota val label: String? = null,
     val name: String,
-    val popularity: Double,
+    @SpotifyExtendedQuota val popularity: Double? = null,
     @SerialName("release_date") private val releaseDateString: String,
     @SerialName("release_date_precision") val releaseDatePrecision: String,
     val tracks: PagingObject<SimpleTrack>,
@@ -153,9 +154,9 @@ public data class Album(
     @SerialName("total_tracks") val totalTracks: Int,
     val restrictions: Restrictions? = null
 ) : CoreObject() {
-    val availableMarkets: List<Market> get() = availableMarketsString.map { Market.valueOf(it) }
+    @SpotifyExtendedQuota val availableMarkets: List<Market> get() = availableMarketsString.map { Market.valueOf(it) }
 
-    val externalIds: List<ExternalId> get() = externalIdsString.map { ExternalId(it.key, it.value) }
+    @SpotifyExtendedQuota val externalIds: List<ExternalId> get() = externalIdsString.map { ExternalId(it.key, it.value) }
 
     val albumType: AlbumResultType get() = AlbumResultType.entries.first { it.id == albumTypeString }
 
