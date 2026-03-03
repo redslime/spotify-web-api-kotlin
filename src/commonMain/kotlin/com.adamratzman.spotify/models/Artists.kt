@@ -59,7 +59,7 @@ public data class Artist(
     override val uri: ArtistUri,
 
     @SpotifyExtendedQuota val followers: Followers? = null,
-    val genres: List<String>,
+    @SpotifyExtendedQuota val genres: List<String>,
     val images: List<SpotifyImage>? = null,
     val name: String? = null,
     @SpotifyExtendedQuota val popularity: Double? = null,

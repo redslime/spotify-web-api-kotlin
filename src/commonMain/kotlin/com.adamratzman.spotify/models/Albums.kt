@@ -142,7 +142,7 @@ public data class Album(
 
     val artists: List<SimpleArtist>,
     val copyrights: List<SpotifyCopyright>,
-    val genres: List<String>,
+    @SpotifyExtendedQuota val genres: List<String>,
     val images: List<SpotifyImage>? = null,
     @SpotifyExtendedQuota val label: String? = null,
     val name: String,

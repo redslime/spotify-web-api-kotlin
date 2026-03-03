@@ -3,6 +3,7 @@ package com.adamratzman.spotify.models
 
 import com.adamratzman.spotify.SpotifyRestAction
 import com.adamratzman.spotify.SpotifyScope
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.utils.Locale
 import com.adamratzman.spotify.utils.Market
 import kotlinx.serialization.SerialName
@@ -89,7 +90,7 @@ public data class PodcastEpisodeTrack(
  */
 @Serializable
 public data class Episode(
-    @SerialName("audio_preview_url") val audioPreviewUrl: String? = null,
+    @SpotifyExtendedQuota @SerialName("audio_preview_url") val audioPreviewUrl: String? = null,
     val description: String? = null,
     @SerialName("duration_ms") val durationMs: Int,
     val explicit: Boolean,

@@ -112,7 +112,6 @@ class JsonTests {
         assertEquals(5, playlist.tracks.total)
         assertEquals(5, playlist.items.total)
         assertEquals("Api", playlist.items.items[0].item?.asTrack?.name)
-        println(playlist)
     }
 
     @Test
