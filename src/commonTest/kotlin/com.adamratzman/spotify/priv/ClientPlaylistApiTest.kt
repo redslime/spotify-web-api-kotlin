@@ -5,8 +5,6 @@ package com.adamratzman.spotify.priv
 
 import com.adamratzman.spotify.AbstractTest
 import com.adamratzman.spotify.SpotifyClientApi
-import com.adamratzman.spotify.SpotifyException
-import com.adamratzman.spotify.endpoints.client.SpotifyPlayablePositions
 import com.adamratzman.spotify.models.Playlist
 import com.adamratzman.spotify.models.SimplePlaylist
 import com.adamratzman.spotify.models.toTrackUri
@@ -30,16 +28,16 @@ class ClientPlaylistApiTest : AbstractTest<SpotifyClientApi>() {
     private suspend fun tearDown() {
         if (createdPlaylist != null) {
             coroutineScope {
-                api.playlists.getClientPlaylists().getAllItemsNotNull()
+                val playlistIds = api.playlists.getClientPlaylists().getAllItemsNotNull()
                     .filter { it.name == "this is a test playlist" }
-                    .map {
-                        async {
-                            if (api.following.isFollowingPlaylist(it.id)) {
-                                api.playlists.deleteClientPlaylist(it.id)
-                            }
-                        }
+                    .map { it.id }
+                val deleteIds = api.following.isFollowingPlaylists(*playlistIds.toTypedArray())
+                    .mapIndexed { index, bool ->
+                        playlistIds[index] to bool
                     }
-                    .awaitAll()
+                    .filter { it.second }
+                    .map { it.first }
+                api.playlists.deleteClientPlaylists(*deleteIds.toTypedArray())
             }
         }
 
@@ -73,19 +71,22 @@ class ClientPlaylistApiTest : AbstractTest<SpotifyClientApi>() {
 
         init()
 
-        val usTop50Uri = "spotify:playlist:37i9dQZEVXbLRQDuF5jeBp"
-        val globalTop50Uri = "spotify:playlist:37i9dQZEVXbMDoHDwVN2tF"
-        val globalViral50Uri = "spotify:playlist:37i9dQZEVXbLiRSasKsNU9"
+        // Getting Spotify-owned playlists is extended-quota-restricted (returns null)
+//        val usTop50Uri = "spotify:playlist:37i9dQZEVXbLRQDuF5jeBp"
+//        val globalTop50Uri = "spotify:playlist:37i9dQZEVXbMDoHDwVN2tF"
+//        val globalViral50Uri = "spotify:playlist:37i9dQZEVXbLiRSasKsNU9"
+        val playlistUri = "spotify:playlist:4zUEn5Obw0OHZpxXkbeVwg"
 
         val tracks = listOf(
-            async { api.playlists.getPlaylist(usTop50Uri)!!.tracks.getAllItemsNotNull() },
-            async { api.playlists.getPlaylist(globalTop50Uri)!!.tracks.getAllItemsNotNull() },
-            async { api.playlists.getPlaylist(globalViral50Uri)!!.tracks.getAllItemsNotNull() }
-        ).awaitAll().flatten().mapNotNull { it.track?.uri }
+//            async { api.playlists.getPlaylist(usTop50Uri)!!.items.getAllItemsNotNull() },
+//            async { api.playlists.getPlaylist(globalTop50Uri)!!.items.getAllItemsNotNull() },
+//            async { api.playlists.getPlaylist(globalViral50Uri)!!.items.getAllItemsNotNull() }
+            async { api.playlists.getPlaylist(playlistUri)!!.items.getAllItemsNotNull() }
+        ).awaitAll().flatten().mapNotNull { it.item?.uri }
 
         api.spotifyApiOptions.allowBulkRequests = true
 
-        suspend fun calculatePlaylistSize(): Int? = api.playlists.getClientPlaylist(createdPlaylist!!.id)!!.tracks.total
+        suspend fun calculatePlaylistSize(): Int? = api.playlists.getClientPlaylist(createdPlaylist!!.id)!!.toFullPlaylist()!!.items.size
         val sizeBefore = calculatePlaylistSize() ?: 0
         api.playlists.addPlayablesToClientPlaylist(createdPlaylist!!.id, playables = tracks.toTypedArray())
         assertEquals(sizeBefore + tracks.size, calculatePlaylistSize())
@@ -131,19 +132,19 @@ class ClientPlaylistApiTest : AbstractTest<SpotifyClientApi>() {
         assertTrue(updatedPlaylist.public == false)
         assertEquals("test playlist", updatedPlaylist.name)
         //assertEquals("description 2", fullPlaylist.description)  <-- spotify is flaky about actually having description set
-        assertTrue(updatedPlaylist.tracks.total == 2 && updatedPlaylist.images?.isNotEmpty() == true)
+        assertTrue(updatedPlaylist.items.total == 2 && updatedPlaylist.images?.isNotEmpty() == true)
 
         api.playlists.reorderClientPlaylistPlayables(updatedPlaylist.id, 1, insertionPoint = 0)
 
         updatedPlaylist = api.playlists.getClientPlaylist(createdPlaylist!!.id)!!
 
-        assertTrue(updatedPlaylist.toFullPlaylist()?.tracks?.items?.get(0)?.track?.id == "7FjZU7XFs7P9jHI9Z0yRhK")
+        assertTrue(updatedPlaylist.toFullPlaylist()?.items?.items?.get(0)?.item?.id == "7FjZU7XFs7P9jHI9Z0yRhK")
 
         api.playlists.removeAllClientPlaylistPlayables(updatedPlaylist.id)
 
         updatedPlaylist = api.playlists.getClientPlaylist(createdPlaylist!!.id)!!
 
-        assertTrue(updatedPlaylist.tracks.total == 0)
+        assertTrue(updatedPlaylist.items.total == 0)
 
         tearDown()
     }
@@ -171,21 +172,22 @@ class ClientPlaylistApiTest : AbstractTest<SpotifyClientApi>() {
 
         assertEquals(
             listOf(playableUriTwo, playableUriTwo),
-            api.playlists.getPlaylistTracks(createdPlaylist!!.id).items.map { it.track?.uri }
+            api.playlists.getPlaylistTracks(createdPlaylist!!.id).items.map { it.item?.uri }
         )
 
-        api.playlists.addPlayableToClientPlaylist(createdPlaylist!!.id, playableUriOne)
-
-        api.playlists.removePlayableFromClientPlaylist(
-            createdPlaylist!!.id,
-            playableUriTwo,
-            SpotifyPlayablePositions(1)
-        )
-
-        assertEquals(
-            listOf(playableUriTwo, playableUriOne),
-            api.playlists.getPlaylistTracks(createdPlaylist!!.id).items.map { it.track?.uri }
-        )
+        // PlayablePositions are unsupported now (2024)
+//        api.playlists.addPlayableToClientPlaylist(createdPlaylist!!.id, playableUriOne)
+//
+//        api.playlists.removePlayableFromClientPlaylist(
+//            createdPlaylist!!.id,
+//            playableUriTwo,
+//            SpotifyPlayablePositions(1)
+//        )
+//
+//        assertEquals(
+//            listOf(playableUriTwo, playableUriOne),
+//            api.playlists.getPlaylistTracks(createdPlaylist!!.id).items.map { it.item?.uri }
+//        )
 
         api.playlists.setClientPlaylistPlayables(
             createdPlaylist!!.id,
@@ -199,32 +201,33 @@ class ClientPlaylistApiTest : AbstractTest<SpotifyClientApi>() {
 
         assertTrue(api.playlists.getPlaylistTracks(createdPlaylist!!.id).items.isEmpty())
 
-        api.playlists.setClientPlaylistPlayables(
-            createdPlaylist!!.id,
-            playableUriTwo,
-            playableUriOne,
-            playableUriTwo,
-            playableUriTwo,
-            playableUriOne
-        )
-
-        api.playlists.removePlayablesFromClientPlaylist(
-            createdPlaylist!!.id,
-            Pair(playableUriOne, SpotifyPlayablePositions(4)),
-            Pair(playableUriTwo, SpotifyPlayablePositions(0))
-        )
-
-        assertEquals(
-            listOf(playableUriOne, playableUriTwo, playableUriTwo),
-            api.playlists.getPlaylistTracks(createdPlaylist!!.id).items.map { it.track?.uri }
-        )
-
-        assertFailsWith<SpotifyException.BadRequestException> {
-            api.playlists.removePlayablesFromClientPlaylist(
-                createdPlaylist!!.id,
-                Pair(playableUriOne, SpotifyPlayablePositions(3))
-            )
-        }
+        // PlayablePositions are unsupported now (2024)
+//        api.playlists.setClientPlaylistPlayables(
+//            createdPlaylist!!.id,
+//            playableUriTwo,
+//            playableUriOne,
+//            playableUriTwo,
+//            playableUriTwo,
+//            playableUriOne
+//        )
+//
+//        api.playlists.removePlayablesFromClientPlaylist(
+//            createdPlaylist!!.id,
+//            Pair(playableUriOne, SpotifyPlayablePositions(4)),
+//            Pair(playableUriTwo, SpotifyPlayablePositions(0))
+//        )
+//
+//        assertEquals(
+//            listOf(playableUriOne, playableUriTwo, playableUriTwo),
+//            api.playlists.getPlaylistTracks(createdPlaylist!!.id).items.map { it.item?.uri }
+//        )
+//
+//        assertFailsWith<SpotifyException.BadRequestException> {
+//            api.playlists.removePlayablesFromClientPlaylist(
+//                createdPlaylist!!.id,
+//                Pair(playableUriOne, SpotifyPlayablePositions(3))
+//            )
+//        }
 
         tearDown()
     }

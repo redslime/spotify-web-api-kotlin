@@ -580,8 +580,8 @@ internal fun Any.instantiateLateinitsIfPagingObjects(api: GenericSpotifyApi) = w
         listOf(this.tracks)
     }
     is Playlist -> {
-        this.tracks.itemClass = PlaylistTrack::class
-        listOf(this.tracks)
+        this.items.itemClass = PlaylistTrack::class
+        listOf(this.items)
     }
     is SpotifySearchResult -> {
         this.albums?.itemClass = SimpleAlbum::class
