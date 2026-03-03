@@ -9,11 +9,13 @@ import com.adamratzman.spotify.runTestOnDefaultDispatcher
 import com.adamratzman.spotify.utils.catch
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class PublicUserApiTest : AbstractTest<GenericSpotifyApi>() {
+    @Ignore // requires extended quota mode
     @Test
     fun testPublicUser(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testPublicUser.name)

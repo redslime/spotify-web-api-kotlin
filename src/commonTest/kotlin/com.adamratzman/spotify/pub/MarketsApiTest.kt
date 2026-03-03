@@ -8,10 +8,12 @@ import com.adamratzman.spotify.GenericSpotifyApi
 import com.adamratzman.spotify.runTestOnDefaultDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 class MarketsApiTest : AbstractTest<GenericSpotifyApi>() {
+    @Ignore // requires extended quota mode
     @Test
     fun testGetAvailableMarkets(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetAvailableMarkets.name)

@@ -11,6 +11,7 @@ import com.adamratzman.spotify.runTestOnDefaultDispatcher
 import com.adamratzman.spotify.utils.Market
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -20,11 +21,18 @@ import kotlin.test.assertTrue
 
 class PublicArtistsApiTest : AbstractTest<GenericSpotifyApi>() {
     @Test
-    fun testGetArtists(): TestResult = runTestOnDefaultDispatcher {
-        buildApi(::testGetArtists.name)
+    fun testGetArtist(): TestResult = runTestOnDefaultDispatcher {
+        buildApi(::testGetArtist.name)
 
         assertNull(api.artists.getArtist("adkjlasdf"))
         assertNotNull(api.artists.getArtist("66CXWjxzNUsdJxJ2JdwvnR"))
+    }
+
+    @Ignore // requires extended quota mode
+    @Test
+    fun testGetArtists(): TestResult = runTestOnDefaultDispatcher {
+        buildApi(::testGetArtists.name)
+
         assertFailsWith<SpotifyException.BadRequestException> { api.artists.getArtists() }
         assertEquals(
             listOf(true, true),
@@ -67,6 +75,7 @@ class PublicArtistsApiTest : AbstractTest<GenericSpotifyApi>() {
         assertTrue(api.artists.getRelatedArtists("0X2BH1fck6amBIoJhDVmmJ").isNotEmpty())
     }
 
+    @Ignore // requires extended quota mode
     @Test
     fun testGetArtistTopTracksByMarket(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetArtistTopTracksByMarket.name)

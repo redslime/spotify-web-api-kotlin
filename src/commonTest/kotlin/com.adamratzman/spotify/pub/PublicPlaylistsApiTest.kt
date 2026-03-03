@@ -13,6 +13,7 @@ import com.adamratzman.spotify.models.Track
 import com.adamratzman.spotify.runTestOnDefaultDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -20,6 +21,7 @@ import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class PublicPlaylistsApiTest : AbstractTest<GenericSpotifyApi>() {
+    @Ignore // requires extended quota mode
     @Test
     fun testGetUserPlaylists(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetUserPlaylists.name)
@@ -72,6 +74,7 @@ class PublicPlaylistsApiTest : AbstractTest<GenericSpotifyApi>() {
         assertFailsWith<SpotifyException.BadRequestException> { api.playlists.getPlaylistCovers("adskjfjkasdf") }
     }
 
+    @Ignore // requires extended quota mode
     @Test
     fun testConvertSimplePlaylistToPlaylist(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testConvertSimplePlaylistToPlaylist.name)

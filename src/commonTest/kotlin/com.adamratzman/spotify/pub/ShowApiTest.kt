@@ -26,6 +26,7 @@ class ShowApiTest : AbstractTest<GenericSpotifyApi>() {
         )
     }
 
+    @Ignore // requires extended quota mode
     @Test
     fun testGetShows(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetShows.name)

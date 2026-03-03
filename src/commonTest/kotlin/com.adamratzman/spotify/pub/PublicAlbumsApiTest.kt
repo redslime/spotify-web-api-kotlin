@@ -10,6 +10,7 @@ import com.adamratzman.spotify.runTestOnDefaultDispatcher
 import com.adamratzman.spotify.utils.Market
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -20,13 +21,19 @@ import kotlin.test.assertTrue
 
 class PublicAlbumsApiTest : AbstractTest<GenericSpotifyApi>() {
     @Test
-    fun testGetAlbums(): TestResult = runTestOnDefaultDispatcher {
-        buildApi(::testGetAlbums.name)
+    fun testGetAlbum(): TestResult = runTestOnDefaultDispatcher {
+        buildApi(::testGetAlbum.name)
 
         assertNull(api.albums.getAlbum("asdf", Market.FR))
         assertNull(api.albums.getAlbum("asdf"))
         assertNotNull(api.albums.getAlbum("1f1C1CjidKcWQyiIYcMvP2"))
         assertNotNull(api.albums.getAlbum("1f1C1CjidKcWQyiIYcMvP2", Market.US))
+    }
+
+    @Ignore // requires extended quota mode
+    @Test
+    fun testGetAlbums(): TestResult = runTestOnDefaultDispatcher {
+        buildApi(::testGetAlbums.name)
 
         assertFailsWith<SpotifyException.BadRequestException> { api.albums.getAlbums(market = Market.US) }
         assertFailsWith<SpotifyException.BadRequestException> { api.albums.getAlbums() }

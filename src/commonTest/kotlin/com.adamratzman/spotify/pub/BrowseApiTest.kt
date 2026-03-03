@@ -13,13 +13,7 @@ import com.adamratzman.spotify.utils.Market
 import com.adamratzman.spotify.utils.getCurrentTimeMs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNotSame
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class BrowseApiTest : AbstractTest<GenericSpotifyApi>() {
     @Ignore // requires extended quota mode
@@ -29,6 +23,7 @@ class BrowseApiTest : AbstractTest<GenericSpotifyApi>() {
         assertTrue(api.browse.getAvailableGenreSeeds().isNotEmpty())
     }
 
+    @Ignore // requires extended quota mode
     @Test
     fun testGetCategoryList(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetCategoryList.name)
@@ -41,6 +36,7 @@ class BrowseApiTest : AbstractTest<GenericSpotifyApi>() {
         assertTrue(api.browse.getCategoryList(4, 3, locale = Locale.FR_FR, market = Market.CA).items.isNotEmpty())
     }
 
+    @Ignore // requires extended quota mode
     @Test
     fun testGetCategory(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetCategory.name)
@@ -53,6 +49,7 @@ class BrowseApiTest : AbstractTest<GenericSpotifyApi>() {
         assertFailsWith<SpotifyException.BadRequestException> { api.browse.getCategory("no u", Market.US) }
     }
 
+    @Ignore // requires extended quota mode
     @Test
     fun testGetPlaylistsByCategory(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetPlaylistsByCategory.name)
@@ -89,6 +86,7 @@ class BrowseApiTest : AbstractTest<GenericSpotifyApi>() {
         assertTrue(api.browse.getFeaturedPlaylists(offset = 32).playlists.total > 0)
     }
 
+    @Ignore // requires extended quota mode
     @Test
     fun testGetNewReleases(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetNewReleases.name)

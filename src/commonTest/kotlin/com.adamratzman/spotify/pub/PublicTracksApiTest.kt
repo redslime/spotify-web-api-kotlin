@@ -10,6 +10,7 @@ import com.adamratzman.spotify.runTestOnDefaultDispatcher
 import com.adamratzman.spotify.utils.Market
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -25,6 +26,7 @@ class PublicTracksApiTest : AbstractTest<GenericSpotifyApi>() {
         assertNull(api.tracks.getTrack("nonexistant track"))
     }
 
+    @Ignore // requires extended quota mode
     @Test
     fun testGetTracks(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetTracks.name)

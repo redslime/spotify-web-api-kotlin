@@ -26,6 +26,7 @@ class EpisodeApiTest : AbstractTest<GenericSpotifyApi>() {
         )
     }
 
+    @Ignore // requires extended quota mode
     //@Test
     //todo re-enable. Flaky test disabled due to infrequent spotify 500s
     fun testGetEpisodes(): TestResult = runTestOnDefaultDispatcher {
