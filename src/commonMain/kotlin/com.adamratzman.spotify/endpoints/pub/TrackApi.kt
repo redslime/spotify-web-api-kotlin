@@ -3,6 +3,7 @@ package com.adamratzman.spotify.endpoints.pub
 
 import com.adamratzman.spotify.GenericSpotifyApi
 import com.adamratzman.spotify.SpotifyException.BadRequestException
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.http.SpotifyEndpoint
 import com.adamratzman.spotify.models.AudioAnalysis
 import com.adamratzman.spotify.models.AudioFeatures
@@ -79,6 +80,7 @@ public class TrackApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      *
      * @throws BadRequestException if [track] cannot be found
      */
+    @SpotifyExtendedQuota
     public suspend fun getAudioAnalysis(track: String): AudioAnalysis =
         get(endpointBuilder("/audio-analysis/${PlayableUri(track).id.encodeUrl()}").toString())
             .toObject(AudioAnalysis.serializer(), api, json)
@@ -92,6 +94,7 @@ public class TrackApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      *
      * @throws BadRequestException if [track] cannot be found
      */
+    @SpotifyExtendedQuota
     public suspend fun getAudioFeatures(track: String): AudioFeatures =
         get(endpointBuilder("/audio-features/${PlayableUri(track).id.encodeUrl()}").toString())
             .toObject(AudioFeatures.serializer(), api, json)
@@ -105,6 +108,7 @@ public class TrackApi(api: GenericSpotifyApi) : SpotifyEndpoint(api) {
      *
      * @return Ordered list of possibly-null [AudioFeatures] objects.
      */
+    @SpotifyExtendedQuota
     public suspend fun getAudioFeatures(vararg tracks: String): List<AudioFeatures?> {
         checkBulkRequesting(100, tracks.size)
         return bulkStatelessRequest(100, tracks.toList()) { chunk ->

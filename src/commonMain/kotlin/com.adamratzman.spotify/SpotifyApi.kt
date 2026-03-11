@@ -186,7 +186,7 @@ public sealed class SpotifyApi<T : SpotifyApi<T, B>, B : ISpotifyApiBuilder<T, B
         if (!makeTestRequest) return TokenValidityResponse(true, null)
 
         return try {
-            browse.getAvailableGenreSeeds()
+            albums.getAlbum("16jUwWH1dehPfPlqvHVRtb")
             TokenValidityResponse(true, null)
         } catch (e: Exception) {
             TokenValidityResponse(false, e)
