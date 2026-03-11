@@ -61,7 +61,7 @@ public data class Artist(
     val genres: List<String>,
     val images: List<SpotifyImage>? = null,
     val name: String? = null,
-    val popularity: Double,
+    val popularity: Double? = null,
     val type: String
 ) : CoreObject() {
     override fun getMembersThatNeedApiInstantiation(): List<NeedsApi?> = listOf(this)

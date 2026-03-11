@@ -37,7 +37,7 @@ public data class SimpleShow(
     @SerialName("languages") private val languagesString: List<String>,
     @SerialName("media_type") val mediaType: String,
     val name: String,
-    val publisher: String,
+    val publisher: String? = null,
     val type: String,
     override val uri: SpotifyUri
 ) : CoreObject() {
@@ -94,7 +94,7 @@ public data class Show(
     @SerialName("languages") val languagesString: List<String>,
     @SerialName("media_type") val mediaType: String,
     val name: String,
-    val publisher: String,
+    val publisher: String? = null,
     val type: String,
     override val uri: ShowUri
 ) : CoreObject() {

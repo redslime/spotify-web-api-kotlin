@@ -39,7 +39,7 @@ public data class SpotifyUserInformation(
     val country: String? = null,
     @SerialName("display_name") val displayName: String? = null,
     val email: String? = null,
-    val followers: Followers,
+    val followers: Followers? = null,
     val images: List<SpotifyImage>? = null,
     val product: String? = null,
     @SerialName("explicit_content") val explicitContentSettings: ExplicitContentSettings? = null,
@@ -66,7 +66,7 @@ public data class SpotifyPublicUser(
     override val uri: UserUri,
 
     @SerialName("display_name") val displayName: String? = null,
-    val followers: Followers = Followers(null, -1),
+    val followers: Followers? = Followers(null, -1),
     val images: List<SpotifyImage> = listOf(),
     val type: String
 ) : CoreObject() {
