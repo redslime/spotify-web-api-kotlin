@@ -2,6 +2,7 @@
 package com.adamratzman.spotify.models
 
 import com.adamratzman.spotify.SpotifyRestAction
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.utils.Market
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -51,7 +52,7 @@ public data class SimpleTrack(
     @SerialName("is_playable") val isPlayable: Boolean = true,
     @SerialName("linked_from") override val linkedTrack: LinkedTrack? = null,
     val name: String,
-    @SerialName("preview_url") val previewUrl: String? = null,
+    @SpotifyExtendedQuota @SerialName("preview_url") val previewUrl: String? = null,
     @SerialName("track_number") val trackNumber: Int,
     val type: String,
     @SerialName("is_local") val isLocal: Boolean? = null,
@@ -139,8 +140,8 @@ public data class Track(
     val explicit: Boolean,
     @SerialName("linked_from") override val linkedTrack: LinkedTrack? = null,
     val name: String,
-    val popularity: Double,
-    @SerialName("preview_url") val previewUrl: String? = null,
+    val popularity: Double? = null,
+    @SpotifyExtendedQuota @SerialName("preview_url") val previewUrl: String? = null,
     @SerialName("track_number") val trackNumber: Int,
     override val type: String,
     @SerialName("is_local") val isLocal: Boolean? = null,

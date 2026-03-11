@@ -2,6 +2,7 @@
 package com.adamratzman.spotify.models
 
 import com.adamratzman.spotify.SpotifyRestAction
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.utils.Market
 import com.adamratzman.spotify.utils.match
 import kotlinx.serialization.SerialName
@@ -141,7 +142,7 @@ public data class Album(
 
     val artists: List<SimpleArtist>,
     val copyrights: List<SpotifyCopyright>,
-    val genres: List<String>,
+    @SpotifyExtendedQuota val genres: List<String>,
     val images: List<SpotifyImage>? = null,
     val label: String? = null,
     val name: String,
