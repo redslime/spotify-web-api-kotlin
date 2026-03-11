@@ -6,10 +6,12 @@ package com.adamratzman.spotify.pub
 import com.adamratzman.spotify.AbstractTest
 import com.adamratzman.spotify.GenericSpotifyApi
 import com.adamratzman.spotify.SpotifyException
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.runTestOnDefaultDispatcher
 import com.adamratzman.spotify.utils.Market
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -29,13 +31,17 @@ class PublicTracksApiTest : AbstractTest<GenericSpotifyApi>() {
     fun testGetTracks(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetTracks.name)
 
-        assertEquals(listOf(null, null), api.tracks.getTracks("hi", "dad", market = Market.US))
+        assertNull(api.tracks.getTrack("hi"))
+        assertEquals(listOf(null, null), api.tracks.getTracks("1f1C1CjidKcWQyiIYccccc", "1f1C1CjidKcWQyiIYccccc", market = Market.US))
+        assertFailsWith<SpotifyException.BadRequestException> { api.tracks.getTracks("hi", "cccccccccccccccccccccc") }
         assertEquals(
             listOf("Alors souris", null),
-            api.tracks.getTracks("0o4jSZBxOQUiDKzMJSqR4x", "j").map { it?.name }
+            api.tracks.getTracks("0o4jSZBxOQUiDKzMJSqR4x", "1f1C1CjidKcWQyiIYccccc").map { it?.name }
         )
     }
 
+    @OptIn(SpotifyExtendedQuota::class)
+    @Ignore // requires extended quota
     @Test
     fun testAudioAnalysis(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testAudioAnalysis.name)
@@ -44,6 +50,8 @@ class PublicTracksApiTest : AbstractTest<GenericSpotifyApi>() {
         assertEquals("165.61333", api.tracks.getAudioAnalysis("0o4jSZBxOQUiDKzMJSqR4x").track.duration.toString())
     }
 
+    @OptIn(SpotifyExtendedQuota::class)
+    @Ignore // requires extended quota
     @Test
     fun testAudioFeatures(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testAudioFeatures.name)

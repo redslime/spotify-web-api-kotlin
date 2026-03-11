@@ -16,9 +16,11 @@ class UtilityTests {
     fun testPagingObjectGetAllItems(): TestResult = runTestOnDefaultDispatcher {
         buildSpotifyApi(this::class.simpleName!!, ::testPagingObjectGetAllItems.name)?.let { api = it }
 
-        val spotifyWfhPlaylist = api!!.playlists.getPlaylist("37i9dQZF1DWTLSN7iG21yC")!!
-        val totalTracks = spotifyWfhPlaylist.tracks.total
-        val allTracks = spotifyWfhPlaylist.tracks.getAllItemsNotNull()
+        // Getting Spotify-owned playlists is extended-quota-restricted (returns null)
+//        val spotifyWfhPlaylist = api!!.playlists.getPlaylist("37i9dQZF1DWTLSN7iG21yC")!!
+        val playlist = api!!.playlists.getPlaylist("4zUEn5Obw0OHZpxXkbeVwg")!!
+        val totalTracks = playlist.items.total
+        val allTracks = playlist.items.getAllItemsNotNull()
         assertEquals(totalTracks, allTracks.size)
     }
 
@@ -107,7 +109,7 @@ class UtilityTests {
         api.token = api.token.copy(expiresIn = -1)
         val currentToken = api.token
 
-        api.browse.getAvailableGenreSeeds()
+        api.albums.getAlbum("16jUwWH1dehPfPlqvHVRtb")
 
         assertTrue(test)
         assertTrue(api.token.accessToken != currentToken.accessToken)

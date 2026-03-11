@@ -30,14 +30,11 @@ class PublicAlbumsApiTest : AbstractTest<GenericSpotifyApi>() {
 
         assertFailsWith<SpotifyException.BadRequestException> { api.albums.getAlbums(market = Market.US) }
         assertFailsWith<SpotifyException.BadRequestException> { api.albums.getAlbums() }
+        assertFailsWith<SpotifyException.BadRequestException> { api.albums.getAlbums("1f1C1CjidKcWQyiIYcMvP2", "abc") }
         assertEquals(
             listOf(true, false),
-            api.albums.getAlbums("1f1C1CjidKcWQyiIYcMvP2", "abc", market = Market.US)
+            api.albums.getAlbums("1f1C1CjidKcWQyiIYcMvP2", "1f1C1CjidKcWQyiIYccccc", market = Market.US)
                 .map { it != null }
-        )
-        assertEquals(
-            listOf(true, false),
-            api.albums.getAlbums("1f1C1CjidKcWQyiIYcMvP2", "abc").map { it != null }
         )
     }
 

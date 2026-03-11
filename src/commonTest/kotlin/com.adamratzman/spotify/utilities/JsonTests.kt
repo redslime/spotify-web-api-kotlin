@@ -4,7 +4,6 @@
 package com.adamratzman.spotify.utilities
 
 import com.adamratzman.spotify.GenericSpotifyApi
-import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.buildSpotifyApi
 import com.adamratzman.spotify.models.*
 import com.adamratzman.spotify.runTestOnDefaultDispatcher
@@ -12,7 +11,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
 import kotlinx.serialization.builtins.nullable
 import kotlinx.serialization.json.Json
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class JsonTests {
     var api: GenericSpotifyApi? = null

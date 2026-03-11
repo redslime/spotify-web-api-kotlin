@@ -6,6 +6,7 @@ package com.adamratzman.spotify.pub
 import com.adamratzman.spotify.AbstractTest
 import com.adamratzman.spotify.GenericSpotifyApi
 import com.adamratzman.spotify.SpotifyException
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.endpoints.pub.TuneableTrackAttribute
 import com.adamratzman.spotify.runTestOnDefaultDispatcher
 import com.adamratzman.spotify.utils.Locale
@@ -14,6 +15,7 @@ import com.adamratzman.spotify.utils.getCurrentTimeMs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
 import kotlin.test.Test
+import kotlin.test.Ignore
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
 import kotlin.test.assertNotEquals
@@ -22,6 +24,9 @@ import kotlin.test.assertNotSame
 import kotlin.test.assertTrue
 
 class BrowseApiTest : AbstractTest<GenericSpotifyApi>() {
+
+    @OptIn(SpotifyExtendedQuota::class)
+    @Ignore // requires extended quota
     @Test
     fun testGenreSeeds(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGenreSeeds.name)
@@ -52,6 +57,8 @@ class BrowseApiTest : AbstractTest<GenericSpotifyApi>() {
         assertFailsWith<SpotifyException.BadRequestException> { api.browse.getCategory("no u", Market.US) }
     }
 
+    @OptIn(SpotifyExtendedQuota::class)
+    @Ignore // requires extended quota
     @Test
     fun testGetPlaylistsByCategory(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetPlaylistsByCategory.name)
@@ -72,6 +79,8 @@ class BrowseApiTest : AbstractTest<GenericSpotifyApi>() {
         )
     }
 
+    @OptIn(SpotifyExtendedQuota::class)
+    @Ignore // requires extended quota
     @Test
     fun testGetFeaturedPlaylists(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetFeaturedPlaylists.name)
@@ -96,6 +105,8 @@ class BrowseApiTest : AbstractTest<GenericSpotifyApi>() {
         assertTrue(api.browse.getNewReleases(limit = 6, offset = 44, market = Market.US).items.isNotEmpty())
     }
 
+    @OptIn(SpotifyExtendedQuota::class)
+    @Ignore // requires extended quota
     @Test
     fun testGetRecommendations(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetRecommendations.name)

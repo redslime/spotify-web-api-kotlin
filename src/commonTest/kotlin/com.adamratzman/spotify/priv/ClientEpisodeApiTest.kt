@@ -9,11 +9,7 @@ import com.adamratzman.spotify.SpotifyException.BadRequestException
 import com.adamratzman.spotify.runTestOnDefaultDispatcher
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
+import kotlin.test.*
 
 class ClientEpisodeApiTest : AbstractTest<SpotifyClientApi>() {
     @Test
@@ -22,20 +18,21 @@ class ClientEpisodeApiTest : AbstractTest<SpotifyClientApi>() {
         if (!isApiInitialized()) return@runTestOnDefaultDispatcher
 
         assertNull(api.episodes.getEpisode("nonexistant episode"))
-        assertNotNull(api.episodes.getEpisode("3lMZTE81Pbrp0U12WZe27l"))
+        assertNotNull(api.episodes.getEpisode("4fvIbnHhHaD8xljXI0uRXr"))
     }
 
+    @Ignore // requires extended quota mode
     @Test
     fun testGetEpisodes(): TestResult = runTestOnDefaultDispatcher {
         buildApi<SpotifyClientApi>(::testGetEpisodes.name)
         if (!isApiInitialized()) return@runTestOnDefaultDispatcher
 
         assertFailsWith<BadRequestException> { api.episodes.getEpisodes("hi", "dad") }
-        assertFailsWith<BadRequestException> { api.episodes.getEpisodes("1cfOhXP4GQCd5ZFHoSF8gg", "j")[1] }
+        assertFailsWith<BadRequestException> { api.episodes.getEpisodes("4fvIbnHhHaD8xljXI0uRXr", "j")[1] }
 
         assertEquals(
-            listOf("The Great Inflation (Classic)"),
-            api.episodes.getEpisodes("3lMZTE81Pbrp0U12WZe27l").map { it?.name }
+            listOf("The Midterms Begin With a Texas-Size Showdown"),
+            api.episodes.getEpisodes("4fvIbnHhHaD8xljXI0uRXr").map { it?.name }
         )
     }
 }

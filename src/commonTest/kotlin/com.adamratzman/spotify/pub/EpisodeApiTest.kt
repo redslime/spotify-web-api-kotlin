@@ -21,8 +21,8 @@ class EpisodeApiTest : AbstractTest<GenericSpotifyApi>() {
 
         assertNull(api.episodes.getEpisode("nonexistant episode", market = market))
         assertEquals(
-            "The Great Inflation (Classic)",
-            api.episodes.getEpisode("3lMZTE81Pbrp0U12WZe27l", market = market)?.name
+            "The Midterms Begin With a Texas-Size Showdown",
+            api.episodes.getEpisode("4fvIbnHhHaD8xljXI0uRXr", market = market)?.name
         )
     }
 

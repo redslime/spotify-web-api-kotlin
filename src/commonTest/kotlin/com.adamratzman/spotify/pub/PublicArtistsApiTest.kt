@@ -6,11 +6,13 @@ package com.adamratzman.spotify.pub
 import com.adamratzman.spotify.AbstractTest
 import com.adamratzman.spotify.GenericSpotifyApi
 import com.adamratzman.spotify.SpotifyException
+import com.adamratzman.spotify.annotations.SpotifyExtendedQuota
 import com.adamratzman.spotify.endpoints.pub.ArtistApi
 import com.adamratzman.spotify.runTestOnDefaultDispatcher
 import com.adamratzman.spotify.utils.Market
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestResult
+import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -51,13 +53,14 @@ class PublicArtistsApiTest : AbstractTest<GenericSpotifyApi>() {
         assertTrue(
             api.artists.getArtistAlbums(
                 "7wjeXCtRND2ZdKfMJFu6JC",
-                10,
                 include = arrayOf(ArtistApi.AlbumInclusionStrategy.Album)
             )
                 .items.asSequence().map { it.name }.contains("Louane")
         )
     }
 
+    @OptIn(SpotifyExtendedQuota::class)
+    @Ignore // requires extended quota
     @Test
     fun testGetRelatedArtists(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetRelatedArtists.name)

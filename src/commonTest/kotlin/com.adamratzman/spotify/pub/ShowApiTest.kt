@@ -30,14 +30,16 @@ class ShowApiTest : AbstractTest<GenericSpotifyApi>() {
     fun testGetShows(): TestResult = runTestOnDefaultDispatcher {
         buildApi(::testGetShows.name)
 
-        assertContentEquals(listOf(null, null), api.shows.getShows("hi", "dad", market = market))
-        assertContentEquals(
-            listOf(null, null),
-            api.shows.getShows("78sdfjsdjfsjdf", "j", market = market).map { it?.id }
-        )
+        assertNull(api.shows.getShow("hi", market = market))
+        assertContentEquals(listOf(null, null), api.shows.getShows("1f1C1CjidKcWQyiIYccccc", "1f1C1CjidKcWQyiIYccccc", market = market))
+        assertFailsWith<BadRequestException> { api.shows.getShows("hi", "6z4NLXyHPga1UmSJsPK7G1", market = market) }
         assertContentEquals(
             listOf("Freakonomics Radio"),
             api.shows.getShows("6z4NLXyHPga1UmSJsPK7G1", market = market).map { it?.name }
+        )
+        assertContentEquals(
+            listOf("Freakonomics Radio", null),
+            api.shows.getShows("6z4NLXyHPga1UmSJsPK7G1", "1f1C1CjidKcWQyiIYccccc", market = market).map { it?.name }
         )
     }
 
