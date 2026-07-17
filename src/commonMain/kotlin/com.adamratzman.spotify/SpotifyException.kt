@@ -81,4 +81,13 @@ public sealed class SpotifyException(message: String, cause: Throwable? = null) 
             cause = cause,
             message = "You tried to call a method that requires the following missing scopes: $missingScopes. Please make sure that your token is requested with these scopes."
         )
+
+    /**
+     * Exception signifying that the current refresh token has expired.
+     * Refreh tokens are only valid for 6 months, after which they must be refreshed by prompting the user to re-authorize.
+     *
+     * * **[Api Reference](https://developer.spotify.com/blog/2026-06-18-refresh-token-expiration)**
+     */
+    public class RefreshTokenExpiredException(message: String? = null, cause: Throwable? = null) :
+        SpotifyException(message ?: "Refresh token has expired, user needs to re-authorize", cause)
 }

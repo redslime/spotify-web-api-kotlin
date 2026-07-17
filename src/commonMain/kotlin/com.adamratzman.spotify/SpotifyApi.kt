@@ -713,6 +713,8 @@ internal suspend fun executeTokenRequest(
  * @param clientSecret The Spotify application client secret (not needed for PKCE).
  * @param refreshToken The refresh token.
  * @param usesPkceAuth Whether this token was created using PKCE auth or not.
+ *
+ * @throws [SpotifyException.RefreshTokenExpiredException] if the refresh token has expired after 6 months.
  */
 public suspend fun refreshSpotifyClientToken(
     clientId: String,
@@ -760,6 +762,8 @@ public suspend fun refreshSpotifyClientToken(
 
     return if (response.responseCode in 200..399) {
         response.body.toObject(Token.serializer(), null, nonstrictJson)
+    } else if(response.responseCode == 400 && response.body.contains("invalid_grant")) {
+        throw SpotifyException.RefreshTokenExpiredException()
     } else {
         throw BadRequestException(
             response.body.toObject(
